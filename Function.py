@@ -3,16 +3,33 @@ import random
 import socket
 import shutil
 
+####### STRINGHE
+
 # Format string completa text con char per ottenere una stringa di lunghezza length
 def format_string(text, length, char):
 	l = len(text)
 	dif = length - l
 	return char * dif + text 
-	
+
+def reformat_string(text):
+	return text.strip()
+
+def	write_right_text(text):
+	print(str(text).rjust(shutil.get_terminal_size((80, 20))[0] - 5))
+
+def write_daemon_text(host, text):
+	write_right_text("\n")
+	write_right_text("Daemon connected on " + host)
+	write_right_text(text)
+
+def error(text):
+	print ("Error:", text)
 
 # Return PktID in string
 def random_pktid(length):
    return ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(length))
+
+####### SOCKET
 
 def create_socket_server(myHost, port):
 	s = None
@@ -51,20 +68,7 @@ def create_socket_client(myHost, port):
 	    break
 	return s
 
+###### IP
 
 def roll_the_dice(ip):
 	return random.choice([ip[0:15], ip[16:55]])
-
-def	write_right_text(text):
-	print(str(text).rjust(shutil.get_terminal_size((80, 20))[0] - 5))
-
-def write_daemon_text(host, text):
-	write_right_text("\n")
-	write_right_text("Daemon connected on " + host)
-	write_right_text(text)
-
-def reformat_string(text):
-	return text.strip()
-
-def error(text):
-	print ("Error:", text)
