@@ -42,14 +42,20 @@ class Daemon(Thread):
 			else:
 				if func.add_pktid(ricevutoByte[4:20]) is True:
 					if ricevutoByte[0:4] == const.CODE_ANSWER_QUERY:
+						listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
 
 					elif ricevutoByte[0:4] == const.CODE_QUERY:
 						# Inoltro
 						pk = pack.forward_query()
-						if pk != bytes(const.ERROR_PKT, "ascii"):
-							for x in listNeighbor:
-								s = func.create_socket_client(x[0], x[1])
-								if not(s is None):
+						func.forward(pk, listNeighbor, s)
+
+						# Rispondi
+						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:]),"ascii"))
+						if len(listFileFounded) != 0:
+							for x in listFileFounded:
+								pk = func.answer_query(ricevutoByte[4:20], self.host, x[0], x[1])
+								s = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
+								if s != None:
 									s.sendall(pk)
 									s.close()
 
@@ -57,12 +63,7 @@ class Daemon(Thread):
 						func.write_daemon_text("Response near request:", ricevutoByte[20:75])
 						# Inoltro
 						pk = pack.forward_neighbor()
-						if pk != bytes(const.ERROR_PKT, "ascii"):
-							for x in listNeighbor:
-								s = func.create_socket_client(x[0], x[1])
-								if not(s is None):
-									s.sendall(pk)
-									s.close()
+						func.forward(pk, listNeighbor, s)
 
 						# Response neighborhood
 						pk = pack.neighbor(self.host)
