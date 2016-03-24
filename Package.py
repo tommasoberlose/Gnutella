@@ -17,7 +17,7 @@ def forward(pack):
 	else: 
 		return const.ERROR_PKT
 
-def neighbour(ip):
+def neighbor(ip):
 	pk_id = func.random_pktid(const.LENGTH_PKTID)
 	step = func.format_string(const.TTL, const.LENGTH_TTL, "0")
 	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(step, "ascii")
