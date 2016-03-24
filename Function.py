@@ -107,7 +107,6 @@ def search_file(query):
 				file_found = [md5File, file]
 				file_found_list.append(file_found)
 		else:
-			######gestire gli errori
 			func.error("File not exists")
 
 	print(file_found_list)

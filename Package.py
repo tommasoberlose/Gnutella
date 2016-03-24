@@ -37,7 +37,10 @@ def dl(md5):
 	pack = bytes(const.CODE_DOWNLOAD, "ascii") + bytes(md5, "ascii")
 	return pack
 
-
+def answer_query(pktID, ip, md5, fileName):
+	port = func.format_string(const.PORT, const.LENGTH_PORT, "0")
+	fileName = func.format_string(fileName, const.LENGTH_FILENAME, " ")
+	return bytes(const.CODE_ANSWER_QUERY, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii") + md5 + bytes(fileName)
 
 def modify_ttl(step):
 	step = int.from_bytes(step, byteorder='big')
