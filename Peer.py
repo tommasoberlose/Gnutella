@@ -19,9 +19,8 @@ def updateNeighbor(myHost):
 			s.close()
 			break
 
-def search(myHost, query):
+def search(myHost, query, listNeighbor):
 	pk = pack.query(myHost, query)
-	listNeighbor = near.get_neighbor()
 	if len(listNeighbor) is 0:
 		print func.error("Nessun vicino presente, crea prima una rete virtuale")
 	else:
@@ -39,6 +38,58 @@ def search(myHost, query):
 	else:
 		print ("\n\nLista file disponibili: \n")
 		print("ID\tFILE\t\tIP")
+
+		#### PRENDO INPUT PER DOWNLOAD e faccio download(selectFile)
+
+# Funzione di download
+def download(selectFile):	
+
+	print ("Il file selezionato ha questi parametri: ", selectFile)
+
+	md5 = selectFile[1]
+	nomeFile = selectFile[2]
+	ip = selectFile[3]
+	port = selectFile[4]
+
+	# Con probabilità 0.5 invio su IPv4, else IPv6
+	ip = roll_the_dice(ip.decode("ascii"))
+	print(ip)
+
+	# Mi connetto al peer
+
+	sP = func.create_socket_client(ip, port)
+	if sP is None:
+	    print ('Error: could not open socket in download')
+	else:
+		pack = pack.dl(md5)
+		sP.sendall(pack)
+		ricevutoHeader = sP.recv(10)
+		nChunk = int(ricevutoHeader[4:10])
+
+		print(ricevutoHeader)
+
+		ricevutoByte = b''
+
+		i = 0
+		
+		while i != nChunk:
+			ricevutoLen = sP.recv(5)
+			print(ricevutoLen)
+			while (len(ricevutoLen) < 5):
+				ricevutoLen = ricevutoLen + sP.recv(5 - int(ricevutoLen))
+			buff = sP.recv(int(ricevutoLen))
+			while(len(buff) < int(ricevutoLen)):
+				buff = buff + sP.recv(int(ricevutoLen) - len(buff))
+			ricevutoByte = ricevutoByte + buff
+			print(len(buff), buff)
+			i = i + 1
+
+		sP.close()
+
+		print ("Il numero di chunk è: ", nChunk)
+		
+		# Salvare il file data
+		open((const.FILE_COND + nomeFile.decode("ascii")),'wb').write(ricevutoByte)
 
 def logout(ip):
 	i = 0
@@ -60,6 +111,9 @@ def logout(ip):
 	if i is 2:
 		print ("Logout eseguito con successo.")
 
+####### VARIABILI 
+
+listNeighbor = []			
 
 ####### INIZIO CLIENT #######
 nGroup = input("Inserire il numero del gruppo: ")
@@ -67,6 +121,15 @@ nElement = input("Inserire il numero dell'elemento del gruppo: ")
 host = "172.030." + func.format_string(nGroup, LENGTH_SECTION_IPV4, "0") + "." + func.format_string(nElement, LENGTH_SECTION_IPV4, "0") + "|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, LENGTH_SECTION_IPV6, "0") + ":" + func.format_string(nElement, LENGTH_SECTION_IPV6, "0")
 
 print ("IP:", host)
+
+####### DEMONI
+
+daemonThreadv4 = daemon.Daemon(func.get_ipv4(host))
+daemonThreadv6 = daemon.Daemon(func.get_ipv6(host))
+daemonThreadv4.setName("Thread ipv4")
+daemonThreadv6.setName("Thread ipv6")
+daemonThreadv4.start()	
+daemonThreadv6.start()
 
 # Menù di interazione
 while True:
@@ -77,10 +140,12 @@ while True:
 
 	elif (choice == "search"):
 		query = input("\n\nInserisci il nome del file da cercare: ")
-		search(host, query)
+		search(host, query, listNeighbor)
 
 	elif (choice == "quit"):
 		logout(host)
+		daemonThreadv4.join()
+		daemonThreadv6.join()
 		break
 
 	else:
