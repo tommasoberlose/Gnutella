@@ -72,3 +72,9 @@ def create_socket_client(myHost, port):
 
 def roll_the_dice(ip):
 	return random.choice([ip[0:15], ip[16:55]])
+
+def get_ipv4(ip):
+	return ip[0:15]
+
+def get_ipv6(ip):
+	return ip[16:55]

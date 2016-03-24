@@ -34,3 +34,6 @@ def modify_ttl(step):
 	step = int.from_bytes(step, byteorder='big')
 	step = step - 1
 	return step
+
+def logout():
+	return bytes(const.CODE_LOGO, "ascii")
