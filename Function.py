@@ -68,6 +68,14 @@ def create_socket_client(myHost, port):
 	    break
 	return s
 
+def forward(pk, listNeighbor, s):
+	if pk != bytes(const.ERROR_PKT, "ascii"):
+		for x in listNeighbor:
+			s = func.create_socket_client(x[0], x[1])
+			if not(s is None):
+				s.sendall(pk)
+				s.close()
+
 ###### IP
 
 def roll_the_dice(ip):

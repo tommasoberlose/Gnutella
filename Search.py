@@ -4,6 +4,7 @@ import sys
 import string
 import hashlib
 import Constant as const
+import Function as func
 
 def search(query):
 	file_list = []
@@ -17,7 +18,7 @@ def search(query):
 				file_found_list.append(file_found)
 		else:
 			######gestire gli errori
-			error("file_not_exists")
+			func.error("File not exists")
 
 	print(file_found_list)
 	return file_found_list
