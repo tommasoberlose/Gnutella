@@ -20,8 +20,7 @@ def forward_query(pack):
 def neighbor(ip):
 	pk_id = func.random_pktid(const.LENGTH_PKTID)
 	port = func.format_string(const.PORT, const.LENGTH_PORT, "0")
-	step = func.format_string(const.TTL, const.LENGTH_TTL, "0")
-	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii")
+	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii")
 	return pack
 
 
