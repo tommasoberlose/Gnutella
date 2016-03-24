@@ -40,11 +40,12 @@ class Daemon(Thread):
 			if ((not ricevutoByte) || (ricevutoByte[0:4] == const.CODE_LOGO)):
 				break
 			else:
-				if func.add_pktid(ricevutoByte[4:20]) is True:
-					if ricevutoByte[0:4] == const.CODE_ANSWER_QUERY:
-						listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
+				if ricevutoByte[0:4] == const.CODE_ANSWER_QUERY:
+					# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
+					listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
 
-					elif ricevutoByte[0:4] == const.CODE_QUERY:
+				elif ricevutoByte[0:4] == const.CODE_QUERY:
+					if func.add_pktid(ricevutoByte[4:20]) is True:
 						# Inoltro
 						pk = pack.forward_query()
 						func.forward(pk, listNeighbor, s)
@@ -59,7 +60,8 @@ class Daemon(Thread):
 									s.sendall(pk)
 									s.close()
 
-					elif ricevutoByte[0:4] == const.CODE_NEAR:
+				elif ricevutoByte[0:4] == const.CODE_NEAR:
+					if func.add_pktid(ricevutoByte[4:20]) is True:
 						func.write_daemon_text("Response near request:", ricevutoByte[20:75])
 						# Inoltro
 						pk = pack.forward_neighbor()
@@ -72,9 +74,9 @@ class Daemon(Thread):
 							s.sendall(pk)
 							s.close()
 
-					elif ricevutoByte[0:4] == const.CODE_ANSWER_NEAR:
-						func.write_daemon_text("Add neighbor:", ricevutoByte[20:75])
-						listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+				elif ricevutoByte[0:4] == const.CODE_ANSWER_NEAR:
+					func.write_daemon_text("Add neighbor:", ricevutoByte[20:75])
+					listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 
 			conn.close()
 
