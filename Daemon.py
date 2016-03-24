@@ -1,5 +1,4 @@
 from threading import Thread
-from random import randint
 import time
 import socket
 import Constant as const
@@ -26,20 +25,21 @@ class Daemon(Thread):
 		s = func.create_socket_server(self.host, self.port)
 
 		if s is None:
-			write_daemon_text(myHost, 'Error: Daemon could not open socket in upload on ' + myHost)
+			func.write_daemon_text(myHost, 'Error: Daemon could not open socket in upload on ' + myHost)
 			sys.exit(1)
 
 		while 1:
 			conn, addr = s.accept()
-			# write_daemon_text(myHost, 'Connected by ' + addr[0])
+			func.write_daemon_text(myHost, 'Connected by ' + addr[0])
 			ricevutoByte = conn.recv(1024)
 			if not ricevutoByte:
 				break
-			if ricevutoByte == "LOGOUT":
+			if ricevutoByte[0:4] == const.CODE_LOGO:
 				break
-			md5 = ricevutoByte[4:36]
-			fileName = searchName(md5)
-			upload(fileName, conn, myHost)
+			if ricevutoByte[0:4] == const.CODE_QUERY:
+
+			elif ricevutoByte[0:4] == const.CODE_NEAR:
+
 			conn.close()
 
 
