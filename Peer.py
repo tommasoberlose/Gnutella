@@ -36,10 +36,11 @@ def search(myHost, query, listNeighbor):
 	if i is 0:
 		print func.error("Nessun peer vicino attivo")
 	else:
-		print ("\n\nLista file disponibili: \n")
-		print("ID\tFILE\t\tIP")
-
-		#### PRENDO INPUT PER DOWNLOAD e faccio download(selectFile)
+		print ("\n\nScegli file da quelli disponibili (0 per uscire): \n")
+		choose = input("ID\tFILE\t\tIP")
+		stopSearch(myHost)
+		if choose != 0:
+			download(listResultQuery[choose - 1])
 
 # Funzione di download
 def download(selectFile):	
@@ -113,7 +114,10 @@ def logout(ip):
 
 ####### VARIABILI 
 
-listNeighbor = []			
+listNeighbor = []	
+listPkt = []
+listResultQuery = []	
+pktID = []	
 
 ####### INIZIO CLIENT #######
 nGroup = input("Inserire il numero del gruppo: ")
@@ -124,8 +128,8 @@ print ("IP:", host)
 
 ####### DEMONI
 
-daemonThreadv4 = daemon.Daemon(func.get_ipv4(host))
-daemonThreadv6 = daemon.Daemon(func.get_ipv6(host))
+daemonThreadv4 = daemon.Daemon(func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, pktID)
+daemonThreadv6 = daemon.Daemon(func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, pktID)
 daemonThreadv4.setName("Thread ipv4")
 daemonThreadv6.setName("Thread ipv6")
 daemonThreadv4.start()	

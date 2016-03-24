@@ -8,14 +8,14 @@ def query(ip, query):
 	query = func.format_string(query, const.LENGTH_QUERY, " ")
 	pack = bytes(const.CODE_QUERY, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii") + bytes(query, "ascii")
 
-def forward(pack):
-	step = pack[79:81]
+def forward_query(pack):
+	step = pack[80:82]
 	if step != 0:
 		step = modify_ttl(step)
 		pack = bytes(const.CODE_QUERY, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii") + bytes(query, "ascii")
 		return pack
 	else: 
-		return const.ERROR_PKT
+		return bytes(const.ERROR_PKT, "ascii")
 
 def neighbor(ip):
 	pk_id = func.random_pktid(const.LENGTH_PKTID)
@@ -23,6 +23,16 @@ def neighbor(ip):
 	step = func.format_string(const.TTL, const.LENGTH_TTL, "0")
 	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii")
 	return pack
+
+
+def forward_neighbor(pack):
+	step = pack[80:82]
+	if step != 0:
+		step = modify_ttl(step)
+		pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii")
+		return pack
+	else: 
+		return bytes(const.ERROR_PKT, "ascii")
 
 def dl(md5):
 	pack = bytes(const.CODE_DOWNLOAD, "ascii") + bytes(md5, "ascii")
