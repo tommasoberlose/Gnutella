@@ -25,7 +25,7 @@ def create_socket_server(myHost, port):
 	        continue
 	    try:
 	        s.bind(sa)
-	        s.listen(5)
+	        s.listen(10)
 	    except socket.error as msg:
 	        s.close()
 	        s = None
