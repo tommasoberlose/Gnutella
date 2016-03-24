@@ -20,7 +20,7 @@ def forward(pack):
 def neighbor(ip):
 	pk_id = func.random_pktid(const.LENGTH_PKTID)
 	step = func.format_string(const.TTL, const.LENGTH_TTL, "0")
-	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(step, "ascii")
+	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(func.format_string(const.PORT, const.LENGTH_PORT, "0"), "ascii") + bytes(step, "ascii")
 	return pack
 
 def dl(md5):
