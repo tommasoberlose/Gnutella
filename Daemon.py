@@ -19,9 +19,9 @@ class Daemon(Thread):
 		self.listNeighbor = listNeighbor
 		self.listPkt = listPkt
 		self.listResultQuery = listResultQuery
-		self.pktID = pktId
+		self.pktID = pktID
 
-	# Funzione per stopppare il Thread
+	# Funzione per stoppare il Thread
 	def stop(self):
 		self.alive = False
 

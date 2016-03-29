@@ -11,6 +11,7 @@ import Function as func
 ####### STRINGHE
 
 # Format string completa text con char per ottenere una stringa di lunghezza length
+# Tested, fondamentale che il text passato sia stringa e la length un numero.
 def format_string(text, length, char):
 	l = len(text)
 	dif = length - l
@@ -30,15 +31,16 @@ def write_daemon_text(host, text):
 def error(text):
 	print ("Error:", text)
 
-# Return PktID in string
+# Return PktID in string 
+# Tested
 def random_pktid(length):
-   return ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(length))
+   return ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for i in range(length))
 
 ####### SOCKET
 
 def create_socket_server(myHost, port):
 	s = None
-	for res in socket.getaddrinfo(myHost, format_string(port, LENGTH_PORT, "0"), socket.AF_UNSPEC,socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
+	for res in socket.getaddrinfo(myHost, int(port), socket.AF_UNSPEC,socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
 	    af, socktype, proto, canonname, sa = res
 	    try:
 	        s = socket.socket(af, socktype, proto)
@@ -57,7 +59,7 @@ def create_socket_server(myHost, port):
 
 def create_socket_client(myHost, port):
 	s = None
-	for res in socket.getaddrinfo(myHost, format_string(port, LENGTH_PORT, "0"), socket.AF_UNSPEC, socket.SOCK_STREAM):
+	for res in socket.getaddrinfo(myHost, int(port), socket.AF_UNSPEC, socket.SOCK_STREAM):
 	    af, socktype, proto, canonname, sa = res
 	    try:
 	        s = socket.socket(af, socktype, proto)

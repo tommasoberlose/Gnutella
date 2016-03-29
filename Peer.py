@@ -4,6 +4,7 @@ import Package as pack
 import Daemon as daemon
 import Neighbor as near
 
+# Crea il pacchetto "NEAR.PKTID.IP4|IP6.PORTA.", inserisco manualmente un elemento della rete, se va bene invio il pacchetto, else ne provo un altro.
 def updateNeighbor(myHost):
 	pk = pack.neighbor(myHost)
 	while True:
@@ -15,7 +16,7 @@ def updateNeighbor(myHost):
 		if s is None:
 			print func.error("\nErrore nella scelta del primo peer vicino, scegline un altro.")
 		else:
-			s.sendall(bytes(pk, "ascii"))
+			s.sendall(pk)
 			s.close()
 			break
 
@@ -30,7 +31,7 @@ def search(myHost, query, listNeighbor):
 			if s is None:
 				print func.error("\nPeer vicino non attivo:", x[0])
 			else:
-				s.sendall(bytes(pk, "ascii"))
+				s.sendall(pk)
 				s.close()
 				i = i + 1
 	if i is 0:
@@ -99,14 +100,14 @@ def logout(ip):
 	if s is None:
 		print func.error("\nErrore nella chiusura del demone:", func.get_ipv4(ip))
 	else:
-		s.sendall(bytes(pk, "ascii"))
+		s.sendall(pk)
 		s.close()
 		i = i + 1
 	s = func.create_socket_client(func.get_ipv6(ip), const.PORT);
 	if s is None:
 		print func.error("\nErrore nella chiusura del demone:", func.get_ipv6(ip))
 	else:
-		s.sendall(bytes(pk, "ascii"))
+		s.sendall(pk)
 		s.close()
 		i = i + 1
 	if i is 2:
@@ -144,6 +145,9 @@ while True:
 
 	elif (choice == "search"):
 		query = input("\n\nInserisci il nome del file da cercare: ")
+		while(len(query) > 20):
+			print("Siamo spiacenti ma accettiamo massimo 20 caratteri.")
+			query = input("\n\nInserisci il nome del file da cercare: ")
 		search(host, query, listNeighbor)
 
 	elif (choice == "quit"):
