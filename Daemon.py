@@ -11,7 +11,7 @@ class Daemon(Thread):
 	# Inizializza il thread, prende in ingresso l'istanza e un valore su cui ciclare
 	# Tutti i metodi di una classe prendono l'istanza come prima variabile in ingresso
 	# __init__ è un metodo predefinito per creare il costruttore
-	def __init__(self, host, listNeighbor, listPkt, listResultQuery, pktID, host46):
+	def __init__(self, host, listNeighbor, listPkt, listResultQuery, host46):
 		# Costruttore
 		Thread.__init__(self)
 		self.host = host
@@ -20,16 +20,16 @@ class Daemon(Thread):
 		self.listNeighbor = listNeighbor
 		self.listPkt = listPkt
 		self.listResultQuery = listResultQuery
-		self.pktID = pktID
 
 	def run(self):
 		# Creazione socket
-		while 1:
-			s = func.create_socket_server(self.host, self.port)
+		s = func.create_socket_server(self.host, self.port)
 
-			if s is None:
-				func.write_daemon_text(self.host, 'Error: Daemon could not open socket in upload on ' + self.host)
-				sys.exit(1)
+		if s is None:
+			func.write_daemon_text(self.host, 'Error: Daemon could not open socket in upload on ' + self.host)
+			sys.exit(1)
+
+		while 1:
 
 			conn, addr = s.accept()
 			func.write_daemon_text(self.host, 'connected by ' + addr[0])
@@ -52,7 +52,7 @@ class Daemon(Thread):
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_QUERY:
 					func.write_daemon_text(self.host, "QUERY")
-					if func.add_pktid(ricevutoByte[4:20], self.pktID) is True:
+					if func.add_pktid(ricevutoByte[4:20], self.listPkt) is True:
 						# Inoltro
 						pk = pack.forward_query()
 						func.forward(pk, self.listNeighbor)
@@ -71,7 +71,7 @@ class Daemon(Thread):
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_NEAR:
 					func.write_daemon_text(self.host, "NEAR")
-					if func.add_pktid(ricevutoByte[4:20], self.pktID) is True:
+					if func.add_pktid(ricevutoByte[4:20], self.listPkt) is True:
 						func.write_daemon_text(self.host, "Response near request:" + str(ricevutoByte[20:75], "ascii"))
 						# Inoltro
 						pk = pack.forward_neighbor(ricevutoByte)
@@ -89,7 +89,7 @@ class Daemon(Thread):
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
 					func.write_daemon_text(self.host, "ANSWER NEAR")
 					func.write_daemon_text(self.host, "Add neighbor:" + str(ricevutoByte[20:75], "ascii"))
-					listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+					self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 
 			conn.close()
 

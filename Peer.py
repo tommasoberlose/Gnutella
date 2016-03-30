@@ -22,12 +22,12 @@ def updateNeighbor(myHost):
 			s.close()
 			break
 
-def search(myHost, query, listNeighbor):
+def search(myHost, query, listNeighbor, listPkt):
 	pk = pack.query(myHost, query)
 	if len(listNeighbor) is 0:
 		func.error("Nessun vicino presente, crea prima una rete virtuale")
 	else:
-		func.add_pktid(pk[4:20])
+		func.add_pktid(pk[4:20], listPkt)
 		i = 0
 		for x in listNeighbor:
 			s = func.create_socket_client(x[0], x[1]);
@@ -46,7 +46,7 @@ def search(myHost, query, listNeighbor):
 		#stopSearch(myHost)
 		if choose != 0:
 			download(listResultQuery[choose - 1])
-			func.remove_pktid(pk, pktID)
+			func.remove_pktid(pk, listPkt)
 	
 
 # Funzione di download
@@ -123,8 +123,7 @@ def logout(ip):
 
 listNeighbor = []	
 listPkt = []
-listResultQuery = []	
-pktID = []	
+listResultQuery = []
 
 ####### INIZIO CLIENT #######
 nGroup = input("Inserire il numero del gruppo: ")
@@ -138,8 +137,8 @@ print ("IP:", host)
 
 ####### DEMONI
 
-daemonThreadv4 = daemon.Daemon(func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, pktID, host)
-daemonThreadv6 = daemon.Daemon(func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, pktID, host)
+daemonThreadv4 = daemon.Daemon(func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, host)
+daemonThreadv6 = daemon.Daemon(func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, host)
 daemonThreadv4.setName("Thread ipv4")
 daemonThreadv6.setName("Thread ipv6")
 daemonThreadv4.start()	
@@ -157,7 +156,7 @@ while True:
 		while(len(query) > const.LENGTH_QUERY):
 			print("Siamo spiacenti ma accettiamo massimo 20 caratteri.")
 			query = input("\n\nInserisci il nome del file da cercare: ")
-		search(host, query, listNeighbor)
+		search(host, query, listNeighbor, listPkt)
 
 	elif (choice == "quit"):
 		logout(host)
