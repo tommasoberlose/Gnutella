@@ -7,13 +7,13 @@ def query(ip, query):
 	step = func.format_string(const.TTL, const.LENGTH_TTL, "0")
 	query = func.format_string(query, const.LENGTH_QUERY, " ")
 	pack = bytes(const.CODE_QUERY, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii") + bytes(query, "ascii")
+	return pack
 
 def forward_query(pack):
 	step = modify_ttl(pack[80:82])
 	if step != 0:
-		step = func.format_string(str(step, "ascii"), const.LENGTH_TTL, "0")
-		############
-		pack = bytes(const.CODE_QUERY, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii") + bytes(query, "ascii")
+		step = func.format_string(str(step), const.LENGTH_TTL, "0")
+		pack = pack[0:80] + bytes(step, "ascii") + pack[82:]
 		return pack
 	else: 
 		return bytes(const.ERROR_PKT, "ascii")
@@ -21,16 +21,16 @@ def forward_query(pack):
 def neighbor(ip):
 	pk_id = func.random_pktid(const.LENGTH_PKTID)
 	port = func.format_string(const.PORT, const.LENGTH_PORT, "0")
-	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii")
+	step = func.format_string(const.TTL, const.LENGTH_TTL, "0")
+	pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii")
 	return pack
 
 
 def forward_neighbor(pack):
 	step = modify_ttl(pack[80:82])
 	if step != 0:
-		step = func.format_string(str(step, "ascii"), const.LENGTH_TTL, "0")
-		##########
-		pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii")
+		step = func.format_string(str(step), const.LENGTH_TTL, "0")
+		pack = pack[0:80] + bytes(step, "ascii")
 		return pack
 	else: 
 		return bytes(const.ERROR_PKT, "ascii")
@@ -42,7 +42,7 @@ def dl(md5):
 def answer_query(pktID, ip, md5, fileName):
 	port = func.format_string(const.PORT, const.LENGTH_PORT, "0")
 	fileName = func.format_string(fileName, const.LENGTH_FILENAME, " ")
-	return bytes(const.CODE_ANSWER_QUERY, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii") + md5 + bytes(fileName)
+	return bytes(const.CODE_ANSWER_QUERY, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii") + md5 + bytes(fileName, "ascii")
 
 def modify_ttl(step):
 	step = int(step)
