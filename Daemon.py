@@ -45,14 +45,14 @@ class Daemon(Thread):
 					func.write_daemon_text(self.host, "ANSWER QUERY")
 					# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
 					listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
-					print(len(listResultQuery) + "\t" + ricevutoByte[112:] + "\t" + ricevutoByte[20:75])
+					print(len(listResultQuery) + "\t" + ricevutoByte[112:] + "\t" + str(ricevutoByte[20:75],"ascii"))
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_QUERY:
 					func.write_daemon_text(self.host, "QUERY")
-					if func.add_pktid(ricevutoByte[4:20], self.pktID) is False:
+					if func.add_pktid(ricevutoByte[4:20], self.pktID) is True:
 						# Inoltro
 						pk = pack.forward_query()
-						func.forward(pk, listNeighbor, s)
+						func.forward(pk, self.listNeighbor, s)
 
 						# Rispondi
 						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:]),"ascii"))
@@ -67,12 +67,12 @@ class Daemon(Thread):
 						func.write_daemon_text(self.host, "Pacchetto già ricevuto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_NEAR:
-					func.write_daemon_text("NEAR")
-					if func.add_pktid(ricevutoByte[4:20], self.pktID) is False:
-						func.write_daemon_text(self.host, "Response near request:" + ricevutoByte[20:75])
+					func.write_daemon_text(self.host, "NEAR")
+					if func.add_pktid(ricevutoByte[4:20], self.pktID) is True:
+						func.write_daemon_text(self.host, "Response near request:" + str(ricevutoByte[20:75], "ascii"))
 						# Inoltro
-						pk = pack.forward_neighbor()
-						func.forward(pk, listNeighbor, s)
+						pk = pack.forward_neighbor(ricevutoByte)
+						func.forward(pk, self.listNeighbor, s)
 
 						# Response neighborhood
 						pk = pack.neighbor(self.host46)
@@ -81,11 +81,11 @@ class Daemon(Thread):
 							s.sendall(pk)
 							s.close()
 					else:
-						func.write_daemon_text("Pacchetto già ricevuto")
+						func.write_daemon_text(self.host, "Pacchetto già ricevuto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
 					func.write_daemon_text(self.host, "NEAR")
-					func.write_daemon_text(self.host, "Add neighbor:" + ricevutoByte[20:75])
+					func.write_daemon_text(self.host, "Add neighbor:" + str(ricevutoByte[20:75], "ascii"))
 					listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 
 			conn.close()

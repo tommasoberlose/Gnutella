@@ -121,14 +121,17 @@ def search_file(query):
 	return file_found_list
 
 def add_pktid(pktid, list_pkt):
+	print("Lista PRIMA della pulizia:", list_pkt)
 	list_pkt = clear_pktid(list_pkt)
+	print("Lista DOPO della pulizia:", list_pkt)
 	for lista in list_pkt:
 		if pktid == lista[0]:
 			return False
 	pkTime = time.time() * 1000
 	add_list = [pktid, pkTime]
 	list_pkt.append(add_list)
-	return list_pkt
+	print("Lista DOPO la ADD:", list_pkt)
+	return True
 
 def clear_pktid(list_pkt):
 	for i in list_pkt:
