@@ -120,7 +120,7 @@ def search_file(query):
 	print(file_found_list)
 	return file_found_list
 
-def add_pktid(list_pkt, pktid):
+def add_pktid(pktid, list_pkt):
 	list_pkt = clear_pktid(list_pkt)
 	for lista in list_pkt:
 		if pktid == lista[0]:
