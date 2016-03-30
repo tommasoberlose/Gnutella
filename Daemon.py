@@ -91,7 +91,16 @@ class Daemon(Thread):
 					func.write_daemon_text(self.host, "Add neighbor:" + str(ricevutoByte[20:75], "ascii"))
 					self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 
-			conn.close()
+				elif str(ricevutoByte[0:4], "ascii") == const.CODE_DOWNLOAD:
+					func.write_daemon_text(self.host, "UPLOAD")
+					sU = func.create_socket_client(addr[0], addr[1])  ####controllare se addr0 corrisponde ad ip e addr1 a port
+					if sU != None:
+						func.upload(func.find_file_by_md5(ricevutoByte[4:]), sU)
+						sU.close() 
+				else:
+					func.write_daemon_text(self.host, "Ricevuto pacchetto sbagliato: " + str(ricevutoByte, "ascii"))
+
+			s.close()
 
 
 
