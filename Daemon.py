@@ -10,20 +10,16 @@ class Daemon(Thread):
 	# Inizializza il thread, prende in ingresso l'istanza e un valore su cui ciclare
 	# Tutti i metodi di una classe prendono l'istanza come prima variabile in ingresso
 	# __init__ è un metodo predefinito per creare il costruttore
-	def __init__(self, host, listNeighbor, listPkt, listResultQuery, pktID):
+	def __init__(self, host, listNeighbor, listPkt, listResultQuery, pktID, host46):
 		# Costruttore
 		Thread.__init__(self)
 		self.host = host
+		self.host46 = host46
 		self.port = const.PORT
-		self.alive = True
 		self.listNeighbor = listNeighbor
 		self.listPkt = listPkt
 		self.listResultQuery = listResultQuery
 		self.pktID = pktID
-
-	# Funzione per stoppare il Thread
-	def stop(self):
-		self.alive = False
 
 	def run(self):
 		# Creazione socket
@@ -45,6 +41,7 @@ class Daemon(Thread):
 					listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
 
 				elif ricevutoByte[0:4] == const.CODE_QUERY:
+					# Da aggiustare
 					if func.add_pktid(ricevutoByte[4:20]) is True:
 						# Inoltro
 						pk = pack.forward_query()
@@ -54,7 +51,8 @@ class Daemon(Thread):
 						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:]),"ascii"))
 						if len(listFileFounded) != 0:
 							for x in listFileFounded:
-								pk = func.answer_query(ricevutoByte[4:20], self.host, x[0], x[1])
+								# Passare l'ip da 55B
+								pk = pack.answer_query(ricevutoByte[4:20], self.host, x[0], x[1])
 								s = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
 								if s != None:
 									s.sendall(pk)

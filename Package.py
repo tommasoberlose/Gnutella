@@ -9,9 +9,10 @@ def query(ip, query):
 	pack = bytes(const.CODE_QUERY, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii") + bytes(query, "ascii")
 
 def forward_query(pack):
-	step = pack[80:82]
+	step = modify_ttl(pack[80:82])
 	if step != 0:
-		step = modify_ttl(step)
+		step = func.format_string(str(step, "ascii"), const.LENGTH_TTL, "0")
+		############
 		pack = bytes(const.CODE_QUERY, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii") + bytes(query, "ascii")
 		return pack
 	else: 
@@ -25,9 +26,10 @@ def neighbor(ip):
 
 
 def forward_neighbor(pack):
-	step = pack[80:82]
+	step = modify_ttl(pack[80:82])
 	if step != 0:
-		step = modify_ttl(step)
+		step = func.format_string(str(step, "ascii"), const.LENGTH_TTL, "0")
+		##########
 		pack = bytes(const.CODE_NEAR, "ascii") + bytes(pk_id, "ascii") + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(step, "ascii")
 		return pack
 	else: 
@@ -43,7 +45,7 @@ def answer_query(pktID, ip, md5, fileName):
 	return bytes(const.CODE_ANSWER_QUERY, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii") + md5 + bytes(fileName)
 
 def modify_ttl(step):
-	step = int.from_bytes(step, byteorder='big')
+	step = int(step)
 	step = step - 1
 	return step
 

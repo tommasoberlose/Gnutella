@@ -39,6 +39,7 @@ def search(myHost, query, listNeighbor):
 	else:
 		print ("\n\nScegli file da quelli disponibili (0 per uscire): \n")
 		choose = input("ID\tFILE\t\tIP")
+		# Da fare
 		stopSearch(myHost)
 		if choose != 0:
 			download(listResultQuery[choose - 1])
