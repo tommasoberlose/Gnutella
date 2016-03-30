@@ -16,7 +16,7 @@ def updateNeighbor(myHost):
 																":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
 		s = func.create_socket_client(hostN, const.PORT);
 		if s is None:
-			func.error("\nErrore nella scelta del primo peer vicino, scegline un altro.")
+			func.error("Errore nella scelta del primo peer vicino, scegline un altro.")
 		else:
 			s.sendall(pk)
 			s.close()
@@ -104,14 +104,14 @@ def logout(ip):
 	pk = pack.logout()
 	s = func.create_socket_client(func.get_ipv4(ip), const.PORT);
 	if s is None:
-		func.error("\nErrore nella chiusura del demone:", func.get_ipv4(ip))
+		func.error("\nErrore nella chiusura del demone:" + func.get_ipv4(ip))
 	else:
 		s.sendall(pk)
 		s.close()
 		i = i + 1
 	s = func.create_socket_client(func.get_ipv6(ip), const.PORT);
 	if s is None:
-		func.error("\nErrore nella chiusura del demone:", func.get_ipv6(ip))
+		func.error("\nErrore nella chiusura del demone:" + func.get_ipv6(ip))
 	else:
 		s.sendall(pk)
 		s.close()
