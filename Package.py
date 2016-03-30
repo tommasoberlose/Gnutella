@@ -44,6 +44,10 @@ def answer_query(pktID, ip, md5, fileName):
 	fileName = func.format_string(fileName, const.LENGTH_FILENAME, " ")
 	return bytes(const.CODE_ANSWER_QUERY, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii") + md5 + bytes(fileName, "ascii")
 
+def answer_neighbor(pktID, ip):
+	port = func.format_string(const.PORT, const.LENGTH_PORT, "0")
+	return bytes(const.CODE_ANSWER_NEAR, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii")
+
 def modify_ttl(step):
 	step = int(step)
 	step = step - 1

@@ -78,7 +78,7 @@ class Daemon(Thread):
 						func.forward(pk, self.listNeighbor)
 
 						# Response neighborhood
-						pk = pack.neighbor(self.host46)
+						pk = pack.answer_neighbor(ricevutoByte[4:20], self.host46)
 						sC = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
 						if sC != None:
 							sC.sendall(pk)
