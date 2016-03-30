@@ -25,7 +25,7 @@ def	write_right_text(text):
 	print(str(text).rjust(shutil.get_terminal_size((80, 20))[0] - 5))
 
 def write_daemon_text(host, text):
-	write_right_text("\n")
+	#write_right_text("\n")
 	write_right_text("Daemon on " + host + ": " + text)
 
 def error(text):
@@ -81,7 +81,7 @@ def create_socket_client(myHost, port):
 		func.error("Errore dimensione IP.")
 	return s
 
-def forward(pk, listNeighbor, s):
+def forward(pk, listNeighbor):
 	if pk != bytes(const.ERROR_PKT, "ascii"):
 		for x in listNeighbor:
 			s = func.create_socket_client(func.roll_the_dice(x[0]), x[1])

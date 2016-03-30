@@ -104,14 +104,14 @@ def logout(ip):
 	pk = pack.logout()
 	s = func.create_socket_client(func.get_ipv4(ip), const.PORT);
 	if s is None:
-		func.error("\nErrore nella chiusura del demone:" + func.get_ipv4(ip))
+		func.error("Errore nella chiusura del demone:" + func.get_ipv4(ip))
 	else:
 		s.sendall(pk)
 		s.close()
 		i = i + 1
 	s = func.create_socket_client(func.get_ipv6(ip), const.PORT);
 	if s is None:
-		func.error("\nErrore nella chiusura del demone:" + func.get_ipv6(ip))
+		func.error("Errore nella chiusura del demone:" + func.get_ipv6(ip))
 	else:
 		s.sendall(pk)
 		s.close()

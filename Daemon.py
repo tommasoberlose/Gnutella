@@ -55,17 +55,17 @@ class Daemon(Thread):
 					if func.add_pktid(ricevutoByte[4:20], self.pktID) is True:
 						# Inoltro
 						pk = pack.forward_query()
-						func.forward(pk, self.listNeighbor, s)
+						func.forward(pk, self.listNeighbor)
 
 						# Rispondi
 						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:]),"ascii"))
 						if len(listFileFounded) != 0:
 							for x in listFileFounded:
 								pk = pack.answer_query(ricevutoByte[4:20], self.host46, x[0], x[1])
-								s = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
-								if s != None:
-									s.sendall(pk)
-									s.close()
+								sC = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
+								if sC != None:
+									sC.sendall(pk)
+									sC.close()
 					else:
 						func.write_daemon_text(self.host, "Pacchetto già ricevuto")
 
@@ -75,19 +75,19 @@ class Daemon(Thread):
 						func.write_daemon_text(self.host, "Response near request:" + str(ricevutoByte[20:75], "ascii"))
 						# Inoltro
 						pk = pack.forward_neighbor(ricevutoByte)
-						func.forward(pk, self.listNeighbor, s)
+						func.forward(pk, self.listNeighbor)
 
 						# Response neighborhood
 						pk = pack.neighbor(self.host46)
-						s = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
-						if s != None:
-							s.sendall(pk)
-							s.close()
+						sC = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
+						if sC != None:
+							sC.sendall(pk)
+							sC.close()
 					else:
 						func.write_daemon_text(self.host, "Pacchetto già ricevuto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
-					func.write_daemon_text(self.host, "NEAR")
+					func.write_daemon_text(self.host, "ANSWER NEAR")
 					func.write_daemon_text(self.host, "Add neighbor:" + str(ricevutoByte[20:75], "ascii"))
 					listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 
