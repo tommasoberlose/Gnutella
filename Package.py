@@ -36,13 +36,13 @@ def forward_neighbor(pack):
 		return bytes(const.ERROR_PKT, "ascii")
 
 def dl(md5):
-	pack = bytes(const.CODE_DOWNLOAD, "ascii") + bytes(md5, "ascii")
+	pack = bytes(const.CODE_DOWNLOAD, "ascii") + md5
 	return pack
 
 def answer_query(pktID, ip, md5, fileName):
 	port = func.format_string(const.PORT, const.LENGTH_PORT, "0")
 	fileName = func.format_string(fileName, const.LENGTH_FILENAME, " ")
-	return bytes(const.CODE_ANSWER_QUERY, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii") + md5 + bytes(fileName, "ascii")
+	return bytes(const.CODE_ANSWER_QUERY, "ascii") + pktID + bytes(ip, "ascii") + bytes(port, "ascii") + bytes(md5, "ascii") + bytes(fileName, "ascii")
 
 def answer_neighbor(pktID, ip):
 	port = func.format_string(const.PORT, const.LENGTH_PORT, "0")

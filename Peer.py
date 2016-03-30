@@ -30,9 +30,9 @@ def search(myHost, query, listNeighbor, listPkt):
 		func.add_pktid(pk[4:20], listPkt)
 		i = 0
 		for x in listNeighbor:
-			s = func.create_socket_client(x[0], x[1]);
+			s = func.create_socket_client(func.roll_the_dice(x[0]), x[1]);
 			if s is None:
-				func.error("\nPeer vicino non attivo:", x[0])
+				func.error("\nPeer vicino non attivo:" + str(x[0], "ascii"))
 			else:
 				s.sendall(pk)
 				s.close()
@@ -41,7 +41,7 @@ def search(myHost, query, listNeighbor, listPkt):
 		func.error("Nessun peer vicino attivo")
 	else:
 		print("\n\nScegli file da quelli disponibili (0 per uscire): \n")
-		choose = input("ID\tFILE\t\tIP")
+		choose = int(input("ID\tFILE\t\tIP\n"))
 		# Da fare
 		#stopSearch(myHost)
 		if choose != 0:
@@ -60,7 +60,7 @@ def download(selectFile):
 	port = selectFile[4]
 
 	# Con probabilità 0.5 invio su IPv4, else IPv6
-	ip = roll_the_dice(ip.decode("ascii"))
+	ip = func.roll_the_dice(ip.decode("ascii"))
 	print(ip)
 
 	# Mi connetto al peer
@@ -69,8 +69,8 @@ def download(selectFile):
 	if sP is None:
 	    print ('Error: could not open socket in download')
 	else:
-		pack = pack.dl(md5)
-		sP.sendall(pack)
+		pk = pack.dl(md5)
+		sP.sendall(pk)
 		ricevutoHeader = sP.recv(10)
 		nChunk = int(ricevutoHeader[4:10])
 

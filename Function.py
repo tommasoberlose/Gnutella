@@ -62,23 +62,20 @@ def create_socket_server(myHost, port):
 
 def create_socket_client(myHost, port):
 	s = None
-	if len(myHost) < 55:
-		for res in socket.getaddrinfo(myHost, int(port), socket.AF_UNSPEC, socket.SOCK_STREAM):
-		    af, socktype, proto, canonname, sa = res
-		    try:
-		        s = socket.socket(af, socktype, proto)
-		    except socket.error as msg:
-		        s = None
-		        continue
-		    try:
-		        s.connect(sa)
-		    except socket.error as msg:
-		        s.close()
-		        s = None
-		        continue
-		    break
-	else:
-		func.error("Errore dimensione IP.")
+	for res in socket.getaddrinfo(myHost, int(port), socket.AF_UNSPEC, socket.SOCK_STREAM):
+	    af, socktype, proto, canonname, sa = res
+	    try:
+	        s = socket.socket(af, socktype, proto)
+	    except socket.error as msg:
+	        s = None
+	        continue
+	    try:
+	        s.connect(sa)
+	    except socket.error as msg:
+	        s.close()
+	        s = None
+	        continue
+	    break
 	return s
 
 def forward(pk, listNeighbor):
@@ -146,8 +143,8 @@ def check_query(pktid, list_pkt):
 	list_pkt = clear_pktid(list_pkt)
 	for lista in list_pkt:
 		if pktid == lista[0]:
-			return False
-	return True
+			return True
+	return False
 
 def remove_pktid(pktid, list_pkt):
 	for lista in list_pkt:

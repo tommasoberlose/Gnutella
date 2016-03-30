@@ -43,22 +43,22 @@ class Daemon(Thread):
 			else:
 				if str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_QUERY:
 					func.write_daemon_text(self.host, "ANSWER QUERY")
-					if func.check_query(ricevutoByte[4:20]):
+					if func.check_query(ricevutoByte[4:20], self.listPkt):
 						# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
-						listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
-						print(len(listResultQuery) + "\t" + ricevutoByte[112:] + "\t" + str(ricevutoByte[20:75],"ascii"))
+						self.listResultQuery.append([len(self.listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
+						print(str(len(self.listResultQuery)) + "\t" + str(ricevutoByte[112:], "ascii") + "\t" + str(ricevutoByte[20:75],"ascii"))
 					else: 
-						func.write_right_text(self.host, "Pacchetto di risposta ad una query arrivato tardi")
+						func.write_daemon_text(self.host, "Pacchetto di risposta ad una query arrivato tardi")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_QUERY:
 					func.write_daemon_text(self.host, "QUERY")
 					if func.add_pktid(ricevutoByte[4:20], self.listPkt) is True:
 						# Inoltro
-						pk = pack.forward_query()
+						pk = pack.forward_query(ricevutoByte)
 						func.forward(pk, self.listNeighbor)
 
 						# Rispondi
-						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:]),"ascii"))
+						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:],"ascii")))
 						if len(listFileFounded) != 0:
 							for x in listFileFounded:
 								pk = pack.answer_query(ricevutoByte[4:20], self.host46, x[0], x[1])
