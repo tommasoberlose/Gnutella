@@ -146,7 +146,7 @@ while True:
 
 	elif (choice == "search"):
 		query = input("\n\nInserisci il nome del file da cercare: ")
-		while(len(query) > 20):
+		while(len(query) > const.LENGTH_QUERY):
 			print("Siamo spiacenti ma accettiamo massimo 20 caratteri.")
 			query = input("\n\nInserisci il nome del file da cercare: ")
 		search(host, query, listNeighbor)

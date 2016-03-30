@@ -31,7 +31,7 @@ class Daemon(Thread):
 
 		while 1:
 			conn, addr = s.accept()
-			func.write_daemon_text(myHost, 'Connected by ' + addr[0])
+			func.write_daemon_text(self.host, 'Connected by ' + addr[0])
 			ricevutoByte = conn.recv(1024)
 			if ((not ricevutoByte) || (ricevutoByte[0:4] == const.CODE_LOGO)):
 				break
@@ -41,8 +41,7 @@ class Daemon(Thread):
 					listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
 
 				elif ricevutoByte[0:4] == const.CODE_QUERY:
-					# Da aggiustare
-					if func.add_pktid(ricevutoByte[4:20]) is True:
+					if func.add_pktid(ricevutoByte[4:20], self.pktID) is False:
 						# Inoltro
 						pk = pack.forward_query()
 						func.forward(pk, listNeighbor, s)
@@ -51,22 +50,21 @@ class Daemon(Thread):
 						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:]),"ascii"))
 						if len(listFileFounded) != 0:
 							for x in listFileFounded:
-								# Passare l'ip da 55B
-								pk = pack.answer_query(ricevutoByte[4:20], self.host, x[0], x[1])
+								pk = pack.answer_query(ricevutoByte[4:20], self.host46, x[0], x[1])
 								s = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
 								if s != None:
 									s.sendall(pk)
 									s.close()
 
 				elif ricevutoByte[0:4] == const.CODE_NEAR:
-					if func.add_pktid(ricevutoByte[4:20]) is True:
+					if func.add_pktid(ricevutoByte[4:20], self.pktID) is False:
 						func.write_daemon_text("Response near request:", ricevutoByte[20:75])
 						# Inoltro
 						pk = pack.forward_neighbor()
 						func.forward(pk, listNeighbor, s)
 
 						# Response neighborhood
-						pk = pack.neighbor(self.host)
+						pk = pack.neighbor(self.host46)
 						s = func.create_socket_client(func.roll_the_dice(ricevutoByte[20:75]), ricevutoByte[75:80])
 						if s != None:
 							s.sendall(pk)

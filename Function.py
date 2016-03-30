@@ -5,6 +5,7 @@ import shutil
 import os
 import sys
 import hashlib
+import time
 import Constant as const
 import Function as func
 
@@ -119,3 +120,22 @@ def search_file(query):
 
 	print(file_found_list)
 	return file_found_list
+
+def add_pktid(list_pkt, pktid):
+	list_pkt = clear_pktid(list_pkt)
+	for lista in list_pkt:
+		if pktid == lista[0]:
+			return False
+	pkTime = time.time() * 1000
+	add_list = [pktid, pkTime]
+	list_pkt.append(add_list)
+	return list_pkt
+
+def clear_pktid(list_pkt):
+	for i in list_pkt:
+		pkTime = i[1]
+		nowtime = time.time() * 1000
+		diff = nowtime - pkTime
+		if diff => 300000:
+			del i
+	return list_pkt
