@@ -141,3 +141,17 @@ def clear_pktid(list_pkt):
 		if diff >= 300000:
 			del i
 	return list_pkt
+
+def check_query(pktid, list_pkt):
+	list_pkt = clear_pktid(list_pkt)
+	for lista in list_pkt:
+		if pktid == lista[0]:
+			return False
+	return True
+
+def remove_pktid(pktid, list_pkt):
+	for lista in list_pkt:
+		if pktid == lista[0]:
+			del lista
+
+

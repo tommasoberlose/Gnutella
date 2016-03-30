@@ -27,6 +27,7 @@ def search(myHost, query, listNeighbor):
 	if len(listNeighbor) is 0:
 		func.error("Nessun vicino presente, crea prima una rete virtuale")
 	else:
+		func.add_pktid(pk[4:20])
 		i = 0
 		for x in listNeighbor:
 			s = func.create_socket_client(x[0], x[1]);
@@ -45,6 +46,8 @@ def search(myHost, query, listNeighbor):
 		#stopSearch(myHost)
 		if choose != 0:
 			download(listResultQuery[choose - 1])
+			func.remove_pktid(pk, pktID)
+	
 
 # Funzione di download
 def download(selectFile):	

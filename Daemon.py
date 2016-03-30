@@ -24,13 +24,13 @@ class Daemon(Thread):
 
 	def run(self):
 		# Creazione socket
-		s = func.create_socket_server(self.host, self.port)
-
-		if s is None:
-			func.write_daemon_text(self.host, 'Error: Daemon could not open socket in upload on ' + self.host)
-			sys.exit(1)
-
 		while 1:
+			s = func.create_socket_server(self.host, self.port)
+
+			if s is None:
+				func.write_daemon_text(self.host, 'Error: Daemon could not open socket in upload on ' + self.host)
+				sys.exit(1)
+
 			conn, addr = s.accept()
 			func.write_daemon_text(self.host, 'connected by ' + addr[0])
 			ricevutoByte = conn.recv(1024)
@@ -43,9 +43,12 @@ class Daemon(Thread):
 			else:
 				if str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_QUERY:
 					func.write_daemon_text(self.host, "ANSWER QUERY")
-					# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
-					listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
-					print(len(listResultQuery) + "\t" + ricevutoByte[112:] + "\t" + str(ricevutoByte[20:75],"ascii"))
+					if func.check_query(ricevutoByte[4:20]):
+						# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
+						listResultQuery.append([len(listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
+						print(len(listResultQuery) + "\t" + ricevutoByte[112:] + "\t" + str(ricevutoByte[20:75],"ascii"))
+					else: 
+						func.write_right_text(self.host, "Pacchetto di risposta ad una query arrivato tardi")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_QUERY:
 					func.write_daemon_text(self.host, "QUERY")
