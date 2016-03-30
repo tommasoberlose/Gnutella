@@ -1,8 +1,7 @@
 import Function as func
-import Costant as const
+import Constant as const
 import Package as pack
 import Daemon as daemon
-import Neighbor as near
 
 # Crea il pacchetto "NEAR.PKTID.IP4|IP6.PORTA.", inserisco manualmente un elemento della rete, se va bene invio il pacchetto, else ne provo un altro.
 def updateNeighbor(myHost):
@@ -11,10 +10,13 @@ def updateNeighbor(myHost):
 		print ("Peer Vicino:")
 		nGroup = input("Numero del gruppo: ")
 		nElement = input("Numero dell'elemento del gruppo: ")
-		hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, LENGTH_SECTION_IPV4, "0") + "." + func.format_string(nElement, LENGTH_SECTION_IPV4, "0") + "|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, LENGTH_SECTION_IPV6, "0") + ":" + func.format_string(nElement, LENGTH_SECTION_IPV6, "0"))
+		hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
+																"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
+																"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
+																":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
 		s = func.create_socket_client(hostN, const.PORT);
 		if s is None:
-			print func.error("\nErrore nella scelta del primo peer vicino, scegline un altro.")
+			func.error("\nErrore nella scelta del primo peer vicino, scegline un altro.")
 		else:
 			s.sendall(pk)
 			s.close()
@@ -23,24 +25,24 @@ def updateNeighbor(myHost):
 def search(myHost, query, listNeighbor):
 	pk = pack.query(myHost, query)
 	if len(listNeighbor) is 0:
-		print func.error("Nessun vicino presente, crea prima una rete virtuale")
+		func.error("Nessun vicino presente, crea prima una rete virtuale")
 	else:
 		i = 0
 		for x in listNeighbor:
 			s = func.create_socket_client(x[0], x[1]);
 			if s is None:
-				print func.error("\nPeer vicino non attivo:", x[0])
+				func.error("\nPeer vicino non attivo:", x[0])
 			else:
 				s.sendall(pk)
 				s.close()
 				i = i + 1
 	if i is 0:
-		print func.error("Nessun peer vicino attivo")
+		func.error("Nessun peer vicino attivo")
 	else:
-		print ("\n\nScegli file da quelli disponibili (0 per uscire): \n")
+		print("\n\nScegli file da quelli disponibili (0 per uscire): \n")
 		choose = input("ID\tFILE\t\tIP")
 		# Da fare
-		stopSearch(myHost)
+		#stopSearch(myHost)
 		if choose != 0:
 			download(listResultQuery[choose - 1])
 
@@ -99,14 +101,14 @@ def logout(ip):
 	pk = pack.logout()
 	s = func.create_socket_client(func.get_ipv4(ip), const.PORT);
 	if s is None:
-		print func.error("\nErrore nella chiusura del demone:", func.get_ipv4(ip))
+		func.error("\nErrore nella chiusura del demone:", func.get_ipv4(ip))
 	else:
 		s.sendall(pk)
 		s.close()
 		i = i + 1
 	s = func.create_socket_client(func.get_ipv6(ip), const.PORT);
 	if s is None:
-		print func.error("\nErrore nella chiusura del demone:", func.get_ipv6(ip))
+		func.error("\nErrore nella chiusura del demone:", func.get_ipv6(ip))
 	else:
 		s.sendall(pk)
 		s.close()
@@ -124,14 +126,17 @@ pktID = []
 ####### INIZIO CLIENT #######
 nGroup = input("Inserire il numero del gruppo: ")
 nElement = input("Inserire il numero dell'elemento del gruppo: ")
-host = "172.030." + func.format_string(nGroup, LENGTH_SECTION_IPV4, "0") + "." + func.format_string(nElement, LENGTH_SECTION_IPV4, "0") + "|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, LENGTH_SECTION_IPV6, "0") + ":" + func.format_string(nElement, LENGTH_SECTION_IPV6, "0")
+host = ("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
+				"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
+				"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
+				":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
 
 print ("IP:", host)
 
 ####### DEMONI
 
-daemonThreadv4 = daemon.Daemon(func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, pktID)
-daemonThreadv6 = daemon.Daemon(func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, pktID)
+daemonThreadv4 = daemon.Daemon(func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, pktID, host)
+daemonThreadv6 = daemon.Daemon(func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, pktID, host)
 daemonThreadv4.setName("Thread ipv4")
 daemonThreadv6.setName("Thread ipv6")
 daemonThreadv4.start()	
@@ -158,4 +163,4 @@ while True:
 		break
 
 	else:
-		error("Wrong Choice!")
+		func.error("Wrong Choice!")

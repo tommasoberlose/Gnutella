@@ -31,9 +31,12 @@ class Daemon(Thread):
 
 		while 1:
 			conn, addr = s.accept()
-			func.write_daemon_text(self.host, 'Connected by ' + addr[0])
+			func.write_daemon_text(self.host, 'connected by ' + addr[0])
 			ricevutoByte = conn.recv(1024)
-			if ((not ricevutoByte) || (ricevutoByte[0:4] == const.CODE_LOGO)):
+			if not ricevutoByte:
+				print("Pacchetto errato")
+				break
+			elif (str(ricevutoByte[0:4], "ascii") == const.CODE_LOGO):
 				break
 			else:
 				if ricevutoByte[0:4] == const.CODE_ANSWER_QUERY:

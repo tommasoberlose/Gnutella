@@ -26,8 +26,7 @@ def	write_right_text(text):
 
 def write_daemon_text(host, text):
 	write_right_text("\n")
-	write_right_text("Daemon connected on " + host)
-	write_right_text(text)
+	write_right_text("Daemon on " + host + ": " + text)
 
 def error(text):
 	print ("Error:", text)
@@ -136,6 +135,6 @@ def clear_pktid(list_pkt):
 		pkTime = i[1]
 		nowtime = time.time() * 1000
 		diff = nowtime - pkTime
-		if diff => 300000:
+		if diff >= 300000:
 			del i
 	return list_pkt
