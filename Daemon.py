@@ -33,7 +33,7 @@ class Daemon(Thread):
 
 			conn, addr = s.accept()
 			func.write_daemon_text(self.host, 'connected by ' + addr[0])
-			ricevutoByte = conn.recv(1024)
+			ricevutoByte = conn.recv(const.LENGTH_PACK)
 			print(ricevutoByte)
 			if not ricevutoByte:
 				print("Pacchetto errato")
@@ -97,10 +97,36 @@ class Daemon(Thread):
 					if sU != None:
 						func.upload(func.find_file_by_md5(ricevutoByte[4:]), sU)
 						sU.close() 
+
+				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_DOWNLOAD:
+					func.write_daemon_text(self.host, "START DOWNLOAD")
+					nChunk = int(ricevutoByte[4:10])
+					
+					ricevutoByte = b''
+
+					i = 0
+					
+					while i != nChunk:
+						ricevutoLen = conn.recv(const.LENGTH_NCHUNK)
+						print(ricevutoLen)
+						while (len(ricevutoLen) < const.LENGTH_NCHUNK):
+							ricevutoLen = ricevutoLen + conn.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
+						buff = conn.recv(int(ricevutoLen))
+						while(len(buff) < int(ricevutoLen)):
+							buff = buff + conn.recv(int(ricevutoLen) - len(buff))
+						ricevutoByte = ricevutoByte + buff
+						print(len(buff), buff)
+						i = i + 1
+
+					print ("Il numero di chunk è: ", nChunk)
+					
+					# Salvare il file data
+					open((const.FILE_COND + nomeFile.decode("ascii")),'wb').write(ricevutoByte)
+
 				else:
 					func.write_daemon_text(self.host, "Ricevuto pacchetto sbagliato: " + str(ricevutoByte, "ascii"))
 
-			s.close()
+		s.close()
 
 
 
