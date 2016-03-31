@@ -47,6 +47,7 @@ def search(myHost, query, listNeighbor, listPkt):
 		if choose != 0:
 			download(listResultQuery[choose - 1])
 			func.remove_pktid(pk, listPkt)
+			#listResultQuery = []
 	
 
 # Funzione di download
@@ -70,8 +71,33 @@ def download(selectFile):
 	    print ('Error: could not open socket in download')
 	else:
 		pk = pack.dl(md5)
+		print("Send:", pk)
 		sP.sendall(pk)
+
+		nChunk = int(sP.recv(const.LENGTH_HEADER))
+					
+		ricevutoByte = b''
+
+		i = 0
+		
+		while i != nChunk:
+			ricevutoLen = sP.recv(const.LENGTH_NCHUNK)
+			print(ricevutoLen)
+			while (len(ricevutoLen) < const.LENGTH_NCHUNK):
+				ricevutoLen = ricevutoLen + sP.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
+			buff = sP.recv(int(ricevutoLen))
+			while(len(buff) < int(ricevutoLen)):
+				buff = buff + sP.recv(int(ricevutoLen) - len(buff))
+			ricevutoByte = ricevutoByte + buff
+			print(len(buff), buff)
+			i = i + 1
+
 		sP.close()
+
+		print ("Il numero di chunk è: ", nChunk)
+		
+		# Salvare il file data
+		open((const.FILE_COND + nomeFile.decode("ascii")),'wb').write(ricevutoByte)
 
 def logout(ip):
 	i = 0

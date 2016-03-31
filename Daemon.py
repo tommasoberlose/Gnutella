@@ -93,7 +93,10 @@ class Daemon(Thread):
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_DOWNLOAD:
 					func.write_daemon_text(self.host, "UPLOAD")
-					sU = func.create_socket_client(addr[0], addr[1])  ####controllare se addr0 corrisponde ad ip e addr1 a port
+					filef = func.find_file_by_md5(ricevutoByte[4:])
+					if filef != const.ERROR_FILE:
+						func.upload(filef, conn)
+					"""sU = func.create_socket_client(addr[0], addr[1])  ####controllare se addr0 corrisponde ad ip e addr1 a port
 					if sU != None:
 						func.upload(func.find_file_by_md5(ricevutoByte[4:]), sU)
 						sU.close() 
@@ -122,7 +125,7 @@ class Daemon(Thread):
 					
 					# Salvare il file data
 					open((const.FILE_COND + nomeFile.decode("ascii")),'wb').write(ricevutoByte)
-
+"""
 				else:
 					func.write_daemon_text(self.host, "Ricevuto pacchetto sbagliato: " + str(ricevutoByte, "ascii"))
 

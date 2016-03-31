@@ -175,3 +175,14 @@ def upload(nomeFile, ss):
 		if i == nChunk:
 			break
 
+def find_file_by_md5(md5):
+	file_list = os.listdir(const.FILE_COND)
+	for filef in file_list:
+		if not filef.endswith('~'):
+			md5File = hashlib.md5(open(const.FILE_COND + filef,'rb').read()).hexdigest()
+			if str(md5, "ascii") == md5File:
+				return filef
+	return const.ERROR_FILE
+
+
+
