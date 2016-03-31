@@ -105,29 +105,29 @@ def search_file(query):
 	file_list = []
 	file_found_list = []
 	file_list = os.listdir(const.FILE_COND)
+	check = 0
 	for file in file_list:
-		if query in file:
+		# Ricerca match nel nome
+		if file.lower().find(query.lower()) == 0:
 			if not file.endswith('~'):
+				check = 1
 				md5File = hashlib.md5(open(const.FILE_COND + file,'rb').read()).hexdigest()
 				file_found = [md5File, file]
 				file_found_list.append(file_found)
-		else:
-			func.error("File not exists")
+	if check == 0:
+		func.error("File not exists1")
 
 	print(file_found_list)
 	return file_found_list
 
 def add_pktid(pktid, list_pkt):
-	print("Lista PRIMA della pulizia:", list_pkt)
 	list_pkt = clear_pktid(list_pkt)
-	print("Lista DOPO della pulizia:", list_pkt)
 	for lista in list_pkt:
 		if pktid == lista[0]:
 			return False
 	pkTime = time.time() * 1000
 	add_list = [pktid, pkTime]
 	list_pkt.append(add_list)
-	print("Lista DOPO la ADD:", list_pkt)
 	return True
 
 def clear_pktid(list_pkt):
@@ -172,7 +172,7 @@ def upload(nomeFile, ss):
 		ss.sendall(pk)
 		#print(pack)
 		i = i + 1
-		if i == nChunk:
+		if i == int(nChunk):
 			break
 
 def find_file_by_md5(md5):

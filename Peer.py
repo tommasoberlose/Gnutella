@@ -56,7 +56,7 @@ def download(selectFile):
 	print ("Il file selezionato ha questi parametri: ", selectFile)
 
 	md5 = selectFile[1]
-	nomeFile = selectFile[2]
+	nomeFile = selectFile[2].decode("ascii").strip()
 	ip = selectFile[3]
 	port = selectFile[4]
 
@@ -74,7 +74,7 @@ def download(selectFile):
 		print("Send:", pk)
 		sP.sendall(pk)
 
-		nChunk = int(sP.recv(const.LENGTH_NCHUNKS))
+		nChunk = int(sP.recv(const.LENGTH_HEADER)[4:10])
 					
 		ricevutoByte = b''
 
@@ -97,7 +97,7 @@ def download(selectFile):
 		print ("Il numero di chunk è: ", nChunk)
 		
 		# Salvare il file data
-		open((const.FILE_COND + nomeFile.decode("ascii")),'wb').write(ricevutoByte)
+		open((const.FILE_COND + nomeFile),'wb').write(ricevutoByte)
 
 def logout(ip):
 	i = 0
