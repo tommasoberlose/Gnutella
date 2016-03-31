@@ -155,9 +155,9 @@ def remove_pktid(pktid, list_pkt):
 ###### UPLOAD FILE 
 
 def upload(nomeFile, ss):
-	f = open((const.FILE_COND + nomeFile.decode("ascii")), 'rb')
+	f = open((const.FILE_COND + nomeFile), 'rb')
 
-	fileLength = os.stat(const.FILE_COND + nomeFile.decode("ascii")).st_size
+	fileLength = os.stat(const.FILE_COND + nomeFile).st_size
 	nChunk = int(fileLength / const.LENGTH_PACK) + 1 
 
 	nChunk = format_string(str(nChunk), const.LENGTH_NCHUNKS, "0")

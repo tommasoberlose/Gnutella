@@ -74,7 +74,7 @@ def download(selectFile):
 		print("Send:", pk)
 		sP.sendall(pk)
 
-		nChunk = int(sP.recv(const.LENGTH_HEADER))
+		nChunk = int(sP.recv(const.LENGTH_NCHUNKS))
 					
 		ricevutoByte = b''
 
