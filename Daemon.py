@@ -87,7 +87,10 @@ class Daemon(Thread):
 
 						# Aggiungo anche io il Vicino
 						if len(listNeighbor) < const.NUM_NEIGHBOR:
-							self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+							if not [ricevutoByte[20:75], ricevutoByte[75:80]] in self.listNeighbor:
+								self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+							else:
+								func.errar("Vicino già presente")
 						else:
 							func.write_daemon_text(self.name, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
 					else:
@@ -96,8 +99,11 @@ class Daemon(Thread):
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
 					func.write_daemon_text(self.name, "ANSWER NEAR")
 					if len(listNeighbor) < const.NUM_NEIGHBOR:
-						func.write_daemon_text(self.name, "Add neighbor: " + str(ricevutoByte[20:75], "ascii"))
-						self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+						if not [ricevutoByte[20:75], ricevutoByte[75:80]] in self.listNeighbor:
+							func.write_daemon_text(self.name, "Add neighbor: " + str(ricevutoByte[20:75], "ascii"))
+							self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+						else:
+							func.errar("Vicino già presente")
 					else:
 						func.write_daemon_text(self.name, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
 
