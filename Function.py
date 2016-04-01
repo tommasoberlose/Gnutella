@@ -24,9 +24,13 @@ def reformat_string(text):
 def	write_right_text(text):
 	print(str(text).rjust(shutil.get_terminal_size((80, 20))[0] - 5))
 
-def write_daemon_text(host, text):
+def write_daemon_text(host, addr, text):
 	#write_right_text("\n")
-	write_right_text("Daemon " + host + ": " + text)
+	write_right_text(">>> " + host + " [" + addr + "]: " + const.START_RED + "ERROR: " + text + const.END_RED)
+
+def write_daemon_error(host, addr, text):
+	#write_right_text("\n")
+	write_right_text(">>>  " + host + " [" + addr + "]: " + text)
 
 def error(text):
 	print (const.START_RED + "Error: " + text + const.END_RED)
@@ -80,11 +84,12 @@ def create_socket_client(myHost, port):
 
 def forward(pk, listNeighbor):
 	if pk != bytes(const.ERROR_PKT, "ascii"):
-		for x in listNeighbor:
-			s = func.create_socket_client(func.roll_the_dice(x[0]), x[1])
-			if not(s is None):
-				s.sendall(pk)
-				s.close()
+		if not [pk[20:75], pk[75:80]] in listNeighbor:
+			for x in listNeighbor:
+				s = func.create_socket_client(func.roll_the_dice(x[0]), x[1])
+				if not(s is None):
+					s.sendall(pk)
+					s.close()
 
 ###### IP
 
@@ -114,10 +119,10 @@ def search_file(query):
 				md5File = hashlib.md5(open(const.FILE_COND + file,'rb').read()).hexdigest()
 				file_found = [md5File, file]
 				file_found_list.append(file_found)
-	if check == 0:
-		func.error("File not exists1")
+	#if check == 0:
+		#func.error("File not exists")
 
-	print(file_found_list)
+	#print(file_found_list)
 	return file_found_list
 
 def add_pktid(pktid, list_pkt):

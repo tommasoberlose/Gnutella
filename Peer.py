@@ -2,13 +2,14 @@ import Function as func
 import Constant as const
 import Package as pack
 import Daemon as daemon
+import os
 
 # Crea il pacchetto "NEAR.PKTID.IP4|IP6.PORTA.", inserisco manualmente un elemento della rete, se va bene invio il pacchetto, else ne provo un altro.
 def updateNeighbor(myHost, listNeighbor):
 	del listNeighbor[:]
 	pk = pack.neighbor(myHost)
 	while True:
-		print (">>> SCELTA PEER VICINO")
+		print ("\n>>> SCELTA PEER VICINO")
 		nGroup = input("Numero del gruppo: ")
 		if nGroup is 0:
 			break
@@ -41,7 +42,7 @@ def search(myHost, query, listNeighbor, listPkt):
 		for x in listNeighbor:
 			s = func.create_socket_client(func.roll_the_dice(x[0]), x[1]);
 			if s is None:
-				func.error("\nPeer vicino non attivo:" + str(x[0], "ascii"))
+				func.error("Peer vicino non attivo:" + str(x[0], "ascii"))
 			else:
 				s.sendall(pk)
 				s.close()
@@ -49,7 +50,7 @@ def search(myHost, query, listNeighbor, listPkt):
 		if i is 0:
 			func.error("Nessun peer vicino attivo")
 		else:
-			print("\n\nScegli file da quelli disponibili (0 per uscire): \n")
+			print("\nScegli file da quelli disponibili (0 per uscire): \n")
 			choose = int(input("ID\tFILE\t\tIP\n"))
 			if choose != 0:
 				func.remove_pktid(pk, listPkt)
@@ -59,7 +60,7 @@ def search(myHost, query, listNeighbor, listPkt):
 
 # Funzione di download
 def download(selectFile):	
-	print (">>> DOWNLOAD")
+	print ("\n>>> DOWNLOAD")
 	#print ("Il file selezionato ha questi parametri: ", selectFile)
 
 	md5 = selectFile[1]
@@ -78,7 +79,7 @@ def download(selectFile):
 	    print ('Error: could not open socket in download')
 	else:
 		pk = pack.dl(md5)
-		print("Send:", pk)
+		#print("Send:", pk)
 		sP.sendall(pk)
 
 		nChunk = int(sP.recv(const.LENGTH_HEADER)[4:10])
@@ -89,14 +90,14 @@ def download(selectFile):
 		
 		while i != nChunk:
 			ricevutoLen = sP.recv(const.LENGTH_NCHUNK)
-			print(ricevutoLen)
+			#print(ricevutoLen)
 			while (len(ricevutoLen) < const.LENGTH_NCHUNK):
 				ricevutoLen = ricevutoLen + sP.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
 			buff = sP.recv(int(ricevutoLen))
 			while(len(buff) < int(ricevutoLen)):
 				buff = buff + sP.recv(int(ricevutoLen) - len(buff))
 			ricevutoByte = ricevutoByte + buff
-			print(len(buff), buff)
+			#print(len(buff), buff)
 			i = i + 1
 
 		sP.close()
@@ -114,7 +115,7 @@ def download(selectFile):
 			except:
 				print("Apertura non riuscita")
 def logout(ip):
-	print (">>> LOGOUT")
+	print ("\n>>> LOGOUT")
 	i = 0
 	pk = pack.logout()
 	s = func.create_socket_client(func.get_ipv4(ip), const.PORT);
@@ -154,8 +155,8 @@ print ("IP:", host)
 
 daemonThreadv4 = daemon.Daemon(func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, host)
 daemonThreadv6 = daemon.Daemon(func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, host)
-daemonThreadv4.setName("Thread ipv4")
-daemonThreadv6.setName("Thread ipv6")
+daemonThreadv4.setName("DAEMON IPV4")
+daemonThreadv6.setName("DAEMON IPV6")
 daemonThreadv4.start()	
 daemonThreadv6.start()
 
@@ -167,7 +168,7 @@ while True:
 		updateNeighbor(host, listNeighbor)
 
 	elif (choice == "view" or choice == "v"):
-		print (">>> VIEW NEIGHBORHOOD")
+		print ("\n>>> VIEW NEIGHBORHOOD")
 		if len(listNeighbor) != 0:
 			for n in listNeighbor:
 				print(str(n[0], "ascii") + "\t" + str(n[1], "ascii"))
@@ -175,11 +176,11 @@ while True:
 			print("Nessun vicino salvato")
 
 	elif (choice == "search" or choice == "s"):
-		print (">>> RICERCA")
-		query = input("\n\nInserisci il nome del file da cercare: ")
+		print ("\n>>> RICERCA")
+		query = input("\nInserisci il nome del file da cercare: ")
 		while(len(query) > const.LENGTH_QUERY):
 			func.error("Siamo spiacenti ma accettiamo massimo 20 caratteri.")
-			query = input("\n\nInserisci il nome del file da cercare: ")
+			query = input("\nInserisci il nome del file da cercare: ")
 		search(host, query, listNeighbor, listPkt)
 
 	elif (choice == "quit" or choice == "q"):
