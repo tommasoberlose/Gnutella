@@ -25,11 +25,12 @@ def	write_right_text(text):
 	print(str(text).rjust(shutil.get_terminal_size((80, 20))[0]))
 
 def write_daemon_error(host, addr, text):
-	#write_right_text("\n")
 	write_right_text(">>> " + host + " [" + addr + "]: " + const.START_RED + "ERROR: " + text + const.END_RED)
 
+def write_daemon_success(host, addr, text):
+	write_right_text(">>> " + host + " [" + addr + "]: " + const.START_GREEN + "SUCCESS: " + text + const.END_GREEN)
+
 def write_daemon_text(host, addr, text):
-	#write_right_text("\n")
 	write_right_text(">>>  " + host + " [" + addr + "]: " + text)
 
 def error(text):

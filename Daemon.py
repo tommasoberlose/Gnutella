@@ -87,7 +87,7 @@ class Daemon(Thread):
 						if len(self.listNeighbor) < const.NUM_NEIGHBOR:
 							if not [ricevutoByte[20:75], ricevutoByte[75:80]] in self.listNeighbor:
 								self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
-								func.write_daemon_text(self.name, addr[0], "NEAR - Added neighbor: " + str(ricevutoByte[20:75], "ascii"))
+								func.write_daemon_success(self.name, addr[0], "NEAR - Added neighbor: " + str(ricevutoByte[20:75], "ascii"))
 							else:
 								func.write_daemon_error(self.name, addr[0], "NEAR - Vicino già presente")
 						else:
@@ -98,7 +98,7 @@ class Daemon(Thread):
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
 					if len(self.listNeighbor) < const.NUM_NEIGHBOR:
 						if not [ricevutoByte[20:75], ricevutoByte[75:80]] in self.listNeighbor:
-							func.write_daemon_text(self.name, addr[0], "ANSWER NEAR - Added neighbor: " + str(ricevutoByte[20:75], "ascii"))
+							func.write_daemon_success(self.name, addr[0], "ANSWER NEAR - Added neighbor: " + str(ricevutoByte[20:75], "ascii"))
 							self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 						else:
 							func.write_daemon_error(self.name, addr[0], "ANSWER NEAR - Vicino già presente")

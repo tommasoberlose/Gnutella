@@ -52,11 +52,18 @@ def search(myHost, query, listNeighbor, listPkt):
 			func.error("Nessun peer vicino attivo")
 		else:
 			print("\nScegli file da quelli disponibili (0 per uscire): \n")
-			choose = int(input("ID\tFILE\t\tIP\n"))
-			if choose != 0:
-				func.remove_pktid(pk, listPkt)
-				download(listResultQuery[choose - 1])
-				del listResultQuery[:]
+			print("ID\tFILE\t\tIP\n")
+			while True:
+				try:
+					choose = int(input())
+					if choose != 0:
+						func.remove_pktid(pk, listPkt)
+						download(listResultQuery[choose - 1])
+						del listResultQuery[:]
+					break
+				except:
+					func.error("Spiacente, inserisci un numero.")
+
 	
 
 # Funzione di download
@@ -138,7 +145,7 @@ def logout(ip):
 
 ####### VARIABILI 
 
-listNeighbor = [[b'172.030.001.001|fc00:0000:0000:0000:0000:0000:0001:0001',b'03003']]	
+listNeighbor = []	
 listPkt = []
 listResultQuery = []
 
@@ -163,7 +170,7 @@ daemonThreadv6.start()
 
 # Menù di interazione
 while True:
-	choice = input("\n\nScegli azione:\nupdate\t - Update Neighborhood\nview\t - View Neighborhood\nsearch\t - Search File\nquit\t - Quit\n\nScelta: ")
+	choice = input("\n\nScegli azione:\nupdate\t - Update Neighborhood\nview\t - View Neighborhood\nsearch\t - Search File\nquit\t - Quit\n\n")
 
 	if (choice == "update" or choice == "u"):
 		updateNeighbor(host, listNeighbor)
