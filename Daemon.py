@@ -11,10 +11,9 @@ class Daemon(Thread):
 	# Inizializza il thread, prende in ingresso l'istanza e un valore su cui ciclare
 	# Tutti i metodi di una classe prendono l'istanza come prima variabile in ingresso
 	# __init__ è un metodo predefinito per creare il costruttore
-	def __init__(self, name, host, listNeighbor, listPkt, listResultQuery, host46):
+	def __init__(self, host, listNeighbor, listPkt, listResultQuery, host46):
 		# Costruttore
 		Thread.__init__(self)
-		self.name = name
 		self.host = host
 		self.host46 = host46
 		self.port = const.PORT
