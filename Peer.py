@@ -166,7 +166,7 @@ while True:
 	if (choice == "update" or choice == "u"):
 		updateNeighbor(host, listNeighbor)
 
-	if (choice == "view" or choice == "v"):
+	elif (choice == "view" or choice == "v"):
 		print (">>> VIEW NEIGHBORHOOD")
 		if len(listNeighbor) != 0:
 			for n in listNeighbor:
