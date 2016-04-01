@@ -34,7 +34,7 @@ class Daemon(Thread):
 			conn, addr = s.accept()
 			func.write_daemon_text(self.host, 'connected by ' + addr[0])
 			ricevutoByte = conn.recv(const.LENGTH_PACK)
-			print(ricevutoByte)
+			#print(ricevutoByte)
 			if not ricevutoByte:
 				print("Pacchetto errato")
 				break
@@ -46,7 +46,7 @@ class Daemon(Thread):
 					if func.check_query(ricevutoByte[4:20], self.listPkt):
 						# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
 						self.listResultQuery.append([len(self.listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
-						print(str(len(self.listResultQuery)) + "\t" + str(ricevutoByte[112:], "ascii") + "\t" + str(ricevutoByte[20:75],"ascii"))
+						print(str(len(self.listResultQuery)) + "\t" + str(ricevutoByte[112:], "ascii").strip() + "\t" + str(ricevutoByte[20:75],"ascii"))
 					else: 
 						func.write_daemon_text(self.host, "Pacchetto di risposta ad una query arrivato tardi")
 
@@ -83,49 +83,28 @@ class Daemon(Thread):
 						if sC != None:
 							sC.sendall(pk)
 							sC.close()
+
+						# Aggiungo anche io il Vicino
+						if len(listNeighbor) < const.NUM_NEIGHBOR:
+							self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+						else:
+							func.write_daemon_text(self.host, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
 					else:
 						func.write_daemon_text(self.host, "Pacchetto già ricevuto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
 					func.write_daemon_text(self.host, "ANSWER NEAR")
-					func.write_daemon_text(self.host, "Add neighbor:" + str(ricevutoByte[20:75], "ascii"))
-					self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+					if len(listNeighbor) < const.NUM_NEIGHBOR:
+						func.write_daemon_text(self.host, "Add neighbor: " + str(ricevutoByte[20:75], "ascii"))
+						self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
+					else:
+						func.write_daemon_text(self.host, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_DOWNLOAD:
 					func.write_daemon_text(self.host, "UPLOAD")
 					filef = func.find_file_by_md5(ricevutoByte[4:])
 					if filef != const.ERROR_FILE:
 						func.upload(filef, conn)
-					"""sU = func.create_socket_client(addr[0], addr[1])  ####controllare se addr0 corrisponde ad ip e addr1 a port
-					if sU != None:
-						func.upload(func.find_file_by_md5(ricevutoByte[4:]), sU)
-						sU.close() 
-
-				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_DOWNLOAD:
-					func.write_daemon_text(self.host, "START DOWNLOAD")
-					nChunk = int(ricevutoByte[4:10])
-					
-					ricevutoByte = b''
-
-					i = 0
-					
-					while i != nChunk:
-						ricevutoLen = conn.recv(const.LENGTH_NCHUNK)
-						print(ricevutoLen)
-						while (len(ricevutoLen) < const.LENGTH_NCHUNK):
-							ricevutoLen = ricevutoLen + conn.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
-						buff = conn.recv(int(ricevutoLen))
-						while(len(buff) < int(ricevutoLen)):
-							buff = buff + conn.recv(int(ricevutoLen) - len(buff))
-						ricevutoByte = ricevutoByte + buff
-						print(len(buff), buff)
-						i = i + 1
-
-					print ("Il numero di chunk è: ", nChunk)
-					
-					# Salvare il file data
-					open((const.FILE_COND + nomeFile.decode("ascii")),'wb').write(ricevutoByte)
-"""
 				else:
 					func.write_daemon_text(self.host, "Ricevuto pacchetto sbagliato: " + str(ricevutoByte, "ascii"))
 

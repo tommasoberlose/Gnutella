@@ -4,13 +4,20 @@ import Package as pack
 import Daemon as daemon
 
 # Crea il pacchetto "NEAR.PKTID.IP4|IP6.PORTA.", inserisco manualmente un elemento della rete, se va bene invio il pacchetto, else ne provo un altro.
-def updateNeighbor(myHost):
+def updateNeighbor(myHost, listNeighbor):
+	del listNeighbor[:]
 	pk = pack.neighbor(myHost)
 	while True:
-		print ("Peer Vicino:")
+		print (">>> SCELTA PEER VICINO")
 		nGroup = input("Numero del gruppo: ")
+		if nGroup is 0:
+			break
 		nElement = input("Numero dell'elemento del gruppo: ")
+		if nElement is 0:
+			break
 		nPort = input("Inserire la porta su cui il vicino è in ascolto: ")
+		if nPort is 0:
+			break
 		hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
 																"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
 																"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
@@ -18,6 +25,7 @@ def updateNeighbor(myHost):
 		s = func.create_socket_client(hostN, nPort);
 		if s is None:
 			func.error("Errore nella scelta del primo peer vicino, scegline un altro.")
+			break
 		else:
 			s.sendall(pk)
 			s.close()
@@ -38,21 +46,21 @@ def search(myHost, query, listNeighbor, listPkt):
 				s.sendall(pk)
 				s.close()
 				i = i + 1
-	if i is 0:
-		func.error("Nessun peer vicino attivo")
-	else:
-		print("\n\nScegli file da quelli disponibili (0 per uscire): \n")
-		choose = int(input("ID\tFILE\t\tIP\n"))
-		if choose != 0:
-			func.remove_pktid(pk, listPkt)
-			download(listResultQuery[choose - 1])
-			del listResultQuery[:]
+		if i is 0:
+			func.error("Nessun peer vicino attivo")
+		else:
+			print("\n\nScegli file da quelli disponibili (0 per uscire): \n")
+			choose = int(input("ID\tFILE\t\tIP\n"))
+			if choose != 0:
+				func.remove_pktid(pk, listPkt)
+				download(listResultQuery[choose - 1])
+				del listResultQuery[:]
 	
 
 # Funzione di download
 def download(selectFile):	
-
-	print ("Il file selezionato ha questi parametri: ", selectFile)
+	print (">>> DOWNLOAD")
+	#print ("Il file selezionato ha questi parametri: ", selectFile)
 
 	md5 = selectFile[1]
 	nomeFile = selectFile[2].decode("ascii").strip()
@@ -61,7 +69,7 @@ def download(selectFile):
 
 	# Con probabilità 0.5 invio su IPv4, else IPv6
 	ip = func.roll_the_dice(ip.decode("ascii"))
-	print(ip)
+	print("Connessione con:", ip)
 
 	# Mi connetto al peer
 
@@ -93,12 +101,20 @@ def download(selectFile):
 
 		sP.close()
 
-		print ("Il numero di chunk è: ", nChunk)
+		#print ("Il numero di chunk è: ", nChunk)
 		
 		# Salvare il file data
 		open((const.FILE_COND + nomeFile),'wb').write(ricevutoByte)
-
+		print("File scaricato correttamente, apertura in corso...")
+		try:
+			os.system("open " + const.FILE_COND + nomeFile)
+		except:
+			try:
+				os.system("start " + const.FILE_COND + nomeFile)
+			except:
+				print("Apertura non riuscita")
 def logout(ip):
+	print (">>> LOGOUT")
 	i = 0
 	pk = pack.logout()
 	s = func.create_socket_client(func.get_ipv4(ip), const.PORT);
@@ -145,19 +161,28 @@ daemonThreadv6.start()
 
 # Menù di interazione
 while True:
-	choice = input("\n\nScegli azione:\nupdate - Update Neighborhood\nsearch - Search File\nquit - Quit\n\nScelta: ")
+	choice = input("\n\nScegli azione:\nupdate\t - Update Neighborhood\nview\t - View Neighborhood\nsearch\t - Search File\nquit\t - Quit\n\nScelta: ")
 
-	if (choice == "update"):
-		updateNeighbor(host)
+	if (choice == "update" or choice == "u"):
+		updateNeighbor(host, listNeighbor)
 
-	elif (choice == "search"):
+	if (choice == "view" or choice == "view"):
+		print (">>> VIEW NEIGHBORHOOD")
+		if len(listNeighbor) != 0:
+			for n in listNeighbor:
+				print(n[0] + "\t" + n[1])
+		else:
+			print("Nessun vicino salvato")
+
+	elif (choice == "search" or choice == "s"):
+		print (">>> RICERCA")
 		query = input("\n\nInserisci il nome del file da cercare: ")
 		while(len(query) > const.LENGTH_QUERY):
-			print("Siamo spiacenti ma accettiamo massimo 20 caratteri.")
+			func.error("Siamo spiacenti ma accettiamo massimo 20 caratteri.")
 			query = input("\n\nInserisci il nome del file da cercare: ")
 		search(host, query, listNeighbor, listPkt)
 
-	elif (choice == "quit"):
+	elif (choice == "quit" or choice == "q"):
 		logout(host)
 		daemonThreadv4.join()
 		daemonThreadv6.join()

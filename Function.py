@@ -29,7 +29,7 @@ def write_daemon_text(host, text):
 	write_right_text("Daemon on " + host + ": " + text)
 
 def error(text):
-	print ("Error:", text)
+	print (const.START_RED + "Error:" + text + const.END_RED)
 
 # Return PktID in string 
 # Tested
