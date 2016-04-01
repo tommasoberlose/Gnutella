@@ -55,13 +55,17 @@ def search(myHost, query, listNeighbor, listPkt):
 			print("ID\tFILE\t\tIP\n")
 			while True:
 				try:
+					print("\n")
 					choose = int(input())
 					if choose != 0:
-						func.remove_pktid(pk, listPkt)
-						download(listResultQuery[choose - 1])
-						del listResultQuery[:]
+						if choose <= i+1:
+							func.remove_pktid(pk, listPkt)
+							download(listResultQuery[choose - 1])
+							del listResultQuery[:]
+						else: 
+							func.error("Spiacente, numero inserito non valido.")
 					break
-				except:
+				except ValueError:
 					func.error("Spiacente, inserisci un numero.")
 
 	
@@ -98,7 +102,7 @@ def download(selectFile):
 		
 		while i != nChunk:
 			ricevutoLen = sP.recv(const.LENGTH_NCHUNK)
-			print(ricevutoLen)
+			#print(ricevutoLen)
 			while (len(ricevutoLen) < const.LENGTH_NCHUNK):
 				ricevutoLen = ricevutoLen + sP.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
 			buff = sP.recv(int(ricevutoLen))

@@ -26,8 +26,7 @@ class Daemon(Thread):
 		s = func.create_socket_server(self.host, self.port)
 
 		if s is None:
-			func.write_daemon_text(self.name, addr[0], 'Error: Daemon could not open socket in upload on ' + self.host)
-			sys.exit(1)
+			func.write_daemon_text(self.name, self.host, 'Error: Daemon could not open socket in upload.')
 
 		while 1:
 
