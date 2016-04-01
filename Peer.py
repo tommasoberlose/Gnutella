@@ -24,7 +24,6 @@ def updateNeighbor(myHost):
 			break
 
 def search(myHost, query, listNeighbor, listPkt):
-	listResultQuery = []
 	pk = pack.query(myHost, query)
 	if len(listNeighbor) is 0:
 		func.error("Nessun vicino presente, crea prima una rete virtuale")
@@ -47,6 +46,7 @@ def search(myHost, query, listNeighbor, listPkt):
 		if choose != 0:
 			func.remove_pktid(pk, listPkt)
 			download(listResultQuery[choose - 1])
+			del listResultQuery[:]
 	
 
 # Funzione di download
