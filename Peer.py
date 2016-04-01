@@ -152,8 +152,8 @@ print ("IP:", host)
 
 ####### DEMONI
 
-daemonThreadv4 = daemon.Daemon(func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, host)
-daemonThreadv6 = daemon.Daemon(func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, host)
+daemonThreadv4 = daemon.Daemon("THREAD IPV4 <<<", func.get_ipv4(host), listNeighbor, listPkt, listResultQuery, host)
+daemonThreadv6 = daemon.Daemon("THREAD IPV6 <<<", func.get_ipv6(host), listNeighbor, listPkt, listResultQuery, host)
 daemonThreadv4.setName("Thread ipv4")
 daemonThreadv6.setName("Thread ipv6")
 daemonThreadv4.start()	

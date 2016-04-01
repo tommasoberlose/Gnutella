@@ -11,9 +11,10 @@ class Daemon(Thread):
 	# Inizializza il thread, prende in ingresso l'istanza e un valore su cui ciclare
 	# Tutti i metodi di una classe prendono l'istanza come prima variabile in ingresso
 	# __init__ è un metodo predefinito per creare il costruttore
-	def __init__(self, host, listNeighbor, listPkt, listResultQuery, host46):
+	def __init__(self, name, host, listNeighbor, listPkt, listResultQuery, host46):
 		# Costruttore
 		Thread.__init__(self)
+		self.name = name
 		self.host = host
 		self.host46 = host46
 		self.port = const.PORT
@@ -26,13 +27,13 @@ class Daemon(Thread):
 		s = func.create_socket_server(self.host, self.port)
 
 		if s is None:
-			func.write_daemon_text(self.host, 'Error: Daemon could not open socket in upload on ' + self.host)
+			func.write_daemon_text(self.name, 'Error: Daemon could not open socket in upload on ' + self.host)
 			sys.exit(1)
 
 		while 1:
 
 			conn, addr = s.accept()
-			func.write_daemon_text(self.host, 'connected by ' + addr[0])
+			func.write_daemon_text(self.name, 'connected by ' + addr[0])
 			ricevutoByte = conn.recv(const.LENGTH_PACK)
 			#print(ricevutoByte)
 			if not ricevutoByte:
@@ -42,16 +43,16 @@ class Daemon(Thread):
 				break
 			else:
 				if str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_QUERY:
-					func.write_daemon_text(self.host, "ANSWER QUERY")
+					func.write_daemon_text(self.name, "ANSWER QUERY")
 					if func.check_query(ricevutoByte[4:20], self.listPkt):
 						# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
 						self.listResultQuery.append([len(self.listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
 						print(str(len(self.listResultQuery)) + "\t" + str(ricevutoByte[112:], "ascii").strip() + "\t" + str(ricevutoByte[20:75],"ascii"))
 					else: 
-						func.write_daemon_text(self.host, "Pacchetto di risposta ad una query arrivato tardi")
+						func.write_daemon_text(self.name, "Pacchetto di risposta ad una query arrivato tardi")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_QUERY:
-					func.write_daemon_text(self.host, "QUERY")
+					func.write_daemon_text(self.name, "QUERY")
 					if func.add_pktid(ricevutoByte[4:20], self.listPkt) is True:
 						# Inoltro
 						pk = pack.forward_query(ricevutoByte)
@@ -67,12 +68,12 @@ class Daemon(Thread):
 									sC.sendall(pk)
 									sC.close()
 					else:
-						func.write_daemon_text(self.host, "Pacchetto già ricevuto")
+						func.write_daemon_text(self.name, "Pacchetto già ricevuto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_NEAR:
-					func.write_daemon_text(self.host, "NEAR")
+					func.write_daemon_text(self.name, "NEAR")
 					if func.add_pktid(ricevutoByte[4:20], self.listPkt) is True:
-						func.write_daemon_text(self.host, "Response near request:" + str(ricevutoByte[20:75], "ascii"))
+						func.write_daemon_text(self.name, "Response near request:" + str(ricevutoByte[20:75], "ascii"))
 						# Inoltro
 						pk = pack.forward_neighbor(ricevutoByte)
 						func.forward(pk, self.listNeighbor)
@@ -88,25 +89,25 @@ class Daemon(Thread):
 						if len(listNeighbor) < const.NUM_NEIGHBOR:
 							self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 						else:
-							func.write_daemon_text(self.host, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
+							func.write_daemon_text(self.name, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
 					else:
-						func.write_daemon_text(self.host, "Pacchetto già ricevuto")
+						func.write_daemon_text(self.name, "Pacchetto già ricevuto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
-					func.write_daemon_text(self.host, "ANSWER NEAR")
+					func.write_daemon_text(self.name, "ANSWER NEAR")
 					if len(listNeighbor) < const.NUM_NEIGHBOR:
-						func.write_daemon_text(self.host, "Add neighbor: " + str(ricevutoByte[20:75], "ascii"))
+						func.write_daemon_text(self.name, "Add neighbor: " + str(ricevutoByte[20:75], "ascii"))
 						self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 					else:
-						func.write_daemon_text(self.host, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
+						func.write_daemon_text(self.name, "Rete completa: neighbor " + str(ricevutoByte[20:75], "ascii") + " non aggiunto")
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_DOWNLOAD:
-					func.write_daemon_text(self.host, "UPLOAD")
+					func.write_daemon_text(self.name, "UPLOAD")
 					filef = func.find_file_by_md5(ricevutoByte[4:])
 					if filef != const.ERROR_FILE:
 						func.upload(filef, conn)
 				else:
-					func.write_daemon_text(self.host, "Ricevuto pacchetto sbagliato: " + str(ricevutoByte, "ascii"))
+					func.write_daemon_text(self.name, "Ricevuto pacchetto sbagliato: " + str(ricevutoByte, "ascii"))
 
 		s.close()
 

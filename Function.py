@@ -26,7 +26,7 @@ def	write_right_text(text):
 
 def write_daemon_text(host, text):
 	#write_right_text("\n")
-	write_right_text("Daemon on " + host + ": " + text)
+	write_right_text("Daemon " + host + ": " + text)
 
 def error(text):
 	print (const.START_RED + "Error:" + text + const.END_RED)
