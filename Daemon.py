@@ -86,7 +86,7 @@ class Daemon(Thread):
 							sC.close()
 
 						# Aggiungo anche io il Vicino
-						if len(listNeighbor) < const.NUM_NEIGHBOR:
+						if len(self.listNeighbor) < const.NUM_NEIGHBOR:
 							if not [ricevutoByte[20:75], ricevutoByte[75:80]] in self.listNeighbor:
 								self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
 							else:
@@ -98,7 +98,7 @@ class Daemon(Thread):
 
 				elif str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_NEAR:
 					func.write_daemon_text(self.name, "ANSWER NEAR")
-					if len(listNeighbor) < const.NUM_NEIGHBOR:
+					if len(self.listNeighbor) < const.NUM_NEIGHBOR:
 						if not [ricevutoByte[20:75], ricevutoByte[75:80]] in self.listNeighbor:
 							func.write_daemon_text(self.name, "Add neighbor: " + str(ricevutoByte[20:75], "ascii"))
 							self.listNeighbor.append([ricevutoByte[20:75], ricevutoByte[75:80]])
