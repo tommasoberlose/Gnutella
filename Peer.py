@@ -10,11 +10,12 @@ def updateNeighbor(myHost):
 		print ("Peer Vicino:")
 		nGroup = input("Numero del gruppo: ")
 		nElement = input("Numero dell'elemento del gruppo: ")
+		nPort = input("Inserire la porta su cui il vicino è in ascolto: ")
 		hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
 																"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
 																"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
 																":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
-		s = func.create_socket_client(hostN, const.PORT);
+		s = func.create_socket_client(hostN, nPort);
 		if s is None:
 			func.error("Errore nella scelta del primo peer vicino, scegline un altro.")
 		else:
