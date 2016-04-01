@@ -33,7 +33,9 @@ class Daemon(Thread):
 
 			conn, addr = s.accept()
 			ricevutoByte = conn.recv(const.LENGTH_PACK)
-			print(ricevutoByte)
+			print("\n")
+			func.write_daemon_text(self.name, addr[0], str(ricevutoByte, "ascii"))
+			
 			if not ricevutoByte:
 				func.write_daemon_error(self.name, addr[0], "Pacchetto errato")
 				break
@@ -53,7 +55,7 @@ class Daemon(Thread):
 					if func.add_pktid(ricevutoByte[4:20], self.listPkt) is True:
 						# Inoltro
 						pk = pack.forward_query(ricevutoByte)
-						func.forward(pk, self.listNeighbor)
+						func.forward(pk, addr[0], self.listNeighbor)
 
 						# Rispondi
 						listFileFounded = func.search_file(func.reformat_string(str(ricevutoByte[82:],"ascii")))
@@ -72,7 +74,7 @@ class Daemon(Thread):
 						func.write_daemon_text(self.name, addr[0], "NEAR - Response request from" + str(ricevutoByte[20:75], "ascii"))
 						# Inoltro
 						pk = pack.forward_neighbor(ricevutoByte)
-						func.forward(pk, self.listNeighbor)
+						func.forward(pk, addr[0], self.listNeighbor)
 
 						# Response neighborhood
 						pk = pack.answer_neighbor(ricevutoByte[4:20], self.host46)

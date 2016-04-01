@@ -22,18 +22,21 @@ def reformat_string(text):
 	return text.strip()
 
 def	write_right_text(text):
-	print(str(text).rjust(shutil.get_terminal_size((80, 20))[0] - 5))
+	print(str(text).rjust(shutil.get_terminal_size((80, 20))[0]))
 
-def write_daemon_text(host, addr, text):
+def write_daemon_error(host, addr, text):
 	#write_right_text("\n")
 	write_right_text(">>> " + host + " [" + addr + "]: " + const.START_RED + "ERROR: " + text + const.END_RED)
 
-def write_daemon_error(host, addr, text):
+def write_daemon_text(host, addr, text):
 	#write_right_text("\n")
 	write_right_text(">>>  " + host + " [" + addr + "]: " + text)
 
 def error(text):
 	print (const.START_RED + "Error: " + text + const.END_RED)
+
+def success(text):
+	print (const.START_GREEN + "Success: " + text + const.END_GREEN)
 
 # Return PktID in string 
 # Tested
@@ -82,14 +85,15 @@ def create_socket_client(myHost, port):
 	    break
 	return s
 
-def forward(pk, listNeighbor):
+def forward(pk, addr, listNeighbor):
 	if pk != bytes(const.ERROR_PKT, "ascii"):
 		if not [pk[20:75], pk[75:80]] in listNeighbor:
 			for x in listNeighbor:
-				s = func.create_socket_client(func.roll_the_dice(x[0]), x[1])
-				if not(s is None):
-					s.sendall(pk)
-					s.close()
+				if addr != x[0]:
+					s = func.create_socket_client(func.roll_the_dice(x[0]), x[1])
+					if not(s is None):
+						s.sendall(pk)
+						s.close()
 
 ###### IP
 

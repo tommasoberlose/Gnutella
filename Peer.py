@@ -42,8 +42,9 @@ def search(myHost, query, listNeighbor, listPkt):
 		for x in listNeighbor:
 			s = func.create_socket_client(func.roll_the_dice(x[0]), x[1]);
 			if s is None:
-				func.error("Peer vicino non attivo:" + str(x[0], "ascii"))
+				func.error("Peer non attivo: " + str(x[0], "ascii"))
 			else:
+				func.success("Peer attivo: " + str(x[0], "ascii"))
 				s.sendall(pk)
 				s.close()
 				i = i + 1
@@ -90,7 +91,7 @@ def download(selectFile):
 		
 		while i != nChunk:
 			ricevutoLen = sP.recv(const.LENGTH_NCHUNK)
-			#print(ricevutoLen)
+			print(ricevutoLen)
 			while (len(ricevutoLen) < const.LENGTH_NCHUNK):
 				ricevutoLen = ricevutoLen + sP.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
 			buff = sP.recv(int(ricevutoLen))
@@ -137,7 +138,7 @@ def logout(ip):
 
 ####### VARIABILI 
 
-listNeighbor = []	
+listNeighbor = [[b'172.030.001.001|fc00:0000:0000:0000:0000:0000:0001:0001',b'03003']]	
 listPkt = []
 listResultQuery = []
 
