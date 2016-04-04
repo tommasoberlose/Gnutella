@@ -43,7 +43,6 @@ class Daemon(Thread):
 			else:
 				if str(ricevutoByte[0:4], "ascii") == const.CODE_ANSWER_QUERY:
 					if func.check_query(ricevutoByte[4:20], self.listPkt):
-						# Controlla che il pacchetto non sia arrivato in ritardo tommAsinus
 						self.listResultQuery.append([len(self.listResultQuery), ricevutoByte[80:112], ricevutoByte[112:], ricevutoByte[20:75], ricevutoByte[75:80]])
 						print(str(len(self.listResultQuery)) + "\t" + str(ricevutoByte[112:], "ascii").strip() + "\t" + str(ricevutoByte[20:75],"ascii"))
 					else: 

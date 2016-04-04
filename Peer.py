@@ -58,12 +58,17 @@ def search(myHost, query, listNeighbor, listPkt):
 					print("\n")
 					choose = int(input())
 					if choose != 0:
-						if choose <= i+1:
+						if choose <= i+1: # Al posto di questo i + 1 dovrebbe andare len(listResultQuery) + 1
 							func.remove_pktid(pk, listPkt)
 							download(listResultQuery[choose - 1])
 							del listResultQuery[:]
 						else: 
 							func.error("Spiacente, numero inserito non valido.")
+					# Per risolvere il problema di aggiornamento della listResultQuery
+					# tra una ricerca e l'altra dovrebbe bastare scrivere qui:
+					# else
+					#		func.remove_pktid(pk, listPkt)
+					#		del listResultQuery[:]
 					break
 				except ValueError:
 					func.error("Spiacente, inserisci un numero.")
@@ -126,6 +131,7 @@ def download(selectFile):
 				os.system("start " + const.FILE_COND + nomeFile)
 			except:
 				print("Apertura non riuscita")
+
 def logout(ip):
 	print ("\n>>> LOGOUT")
 	i = 0
