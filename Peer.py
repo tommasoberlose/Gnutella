@@ -5,17 +5,18 @@ import Daemon as daemon
 import os
 
 def updateNeighbor(myHost, listNeighbor):
+	del listNeighbor[:]
 	pk = pack.neighbor(myHost)
 	# Se avevo già dei vicini vado a testare se sono ancora attivi
-	if len(listNeighbor) != 0:
+	"""if len(listNeighbor) != 0:
 		for neighbor in listNeighbor:
-			s = func.create_socket_client(neighbor[0], neighbor[1]);
+			s = func.create_socket_client(func.roll_the_dice(neighbor[0]), neighbor[1]);
 			# Se non sono più attivi lo segnalo e li cancello dalla lista
 			if s is None:
-				func.error(neighbor[0] + " non è più attivo.")
+				func.error(str(neighbor[0], "ascii") + " non è più attivo.")
 				del neighbor
 			else:
-				func.success(neighbor[0] + " ancora attivo.")
+				func.success(str(neighbor[0], "ascii") + " ancora attivo.")
 				s.close()
 		# Se prima ero al completo e sono ancora tutti attivi lo segnalo e esco
 		if len(listNeighbor) == const.NUM_NEIGHBOR:
@@ -23,7 +24,7 @@ def updateNeighbor(myHost, listNeighbor):
 		# Se invece dopo il controllo ho meno vicini del numero massimo mando a ogni vicino una richiesta di vicinato
 		elif len(listNeighbor) > 0:
 			for neighbor in listNeighbor:
-				s = func.create_socket_client(neighbor[0], neighbor[1]);
+				s = func.create_socket_client(func.roll_the_dice(neighbor[0]), neighbor[1]);
 				if s is None:
 					func.error("Mamma che sfiga, sto vicino è andato giù proprio ora.")
 				else:
@@ -31,30 +32,30 @@ def updateNeighbor(myHost, listNeighbor):
 					s.close()	
 	
 	# Alla fine gestisco la possibilità che tutti i vicini che avevo siano andati giù e quindi passo all'inserimento manuale.
-	if len(listNeighbor) == 0: 		
-		while True:
-			print ("\n>>> SCELTA PEER VICINO")
-			nGroup = input("Numero del gruppo: ")
-			if nGroup is 0:
-				break
-			nElement = input("Numero dell'elemento del gruppo: ")
-			if nElement is 0:
-				break
-			nPort = input("Inserire la porta su cui il vicino è in ascolto: ")
-			if nPort is 0:
-				break
-			hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
-																	"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
-																	"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
-																	":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
-			s = func.create_socket_client(hostN, nPort);
-			if s is None:
-				func.error("Errore nella scelta del primo peer vicino, scegline un altro.")
-				break
-			else:
-				s.sendall(pk)
-				s.close()
-				break
+	if len(listNeighbor) == 0: 		"""
+	while True:
+		print ("\n>>> SCELTA PEER VICINO")
+		nGroup = input("Numero del gruppo: ")
+		if nGroup is 0:
+			break
+		nElement = input("Numero dell'elemento del gruppo: ")
+		if nElement is 0:
+			break
+		nPort = input("Inserire la porta su cui il vicino è in ascolto: ")
+		if nPort is 0:
+			break
+		hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
+																"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
+																"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
+																":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
+		s = func.create_socket_client(hostN, nPort);
+		if s is None:
+			func.error("Errore nella scelta del primo peer vicino, scegline un altro.")
+			break
+		else:
+			s.sendall(pk)
+			s.close()
+			break
 
 def search(myHost, query, listNeighbor, listPkt):
 	pk = pack.query(myHost, query)
