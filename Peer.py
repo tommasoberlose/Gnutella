@@ -4,13 +4,8 @@ import Package as pack
 import Daemon as daemon
 import os
 
-# Crea il pacchetto "NEAR.PKTID.IP4|IP6.PORTA.", inserisco manualmente un elemento della rete, se va bene invio il pacchetto, else ne provo un altro.
 def updateNeighbor(myHost, listNeighbor):
-	del listNeighbor[:]
 	pk = pack.neighbor(myHost)
-	
-	"""
-	# Bisogna cancellare il "del listNeighbor[:]" qua sopra
 	# Se avevo già dei vicini vado a testare se sono ancora attivi
 	if len(listNeighbor) != 0:
 		for neighbor in listNeighbor:
@@ -20,11 +15,11 @@ def updateNeighbor(myHost, listNeighbor):
 				func.error(neighbor[0] + " non è più attivo.")
 				del neighbor
 			else:
+				func.success(neighbor[0] + " ancora attivo.")
 				s.close()
 		# Se prima ero al completo e sono ancora tutti attivi lo segnalo e esco
 		if len(listNeighbor) == const.NUM_NEIGHBOR:
 			func.success("Lista vicini completa!")
-			break
 		# Se invece dopo il controllo ho meno vicini del numero massimo mando a ogni vicino una richiesta di vicinato
 		elif len(listNeighbor) > 0:
 			for neighbor in listNeighbor:
@@ -34,34 +29,32 @@ def updateNeighbor(myHost, listNeighbor):
 				else:
 					s.sendall(pk)
 					s.close()	
+	
 	# Alla fine gestisco la possibilità che tutti i vicini che avevo siano andati giù e quindi passo all'inserimento manuale.
-	if len(listNeighbor) == 0: # Il while va indentato.
-
-	"""
-
-	while True:
-		print ("\n>>> SCELTA PEER VICINO")
-		nGroup = input("Numero del gruppo: ")
-		if nGroup is 0:
-			break
-		nElement = input("Numero dell'elemento del gruppo: ")
-		if nElement is 0:
-			break
-		nPort = input("Inserire la porta su cui il vicino è in ascolto: ")
-		if nPort is 0:
-			break
-		hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
-																"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
-																"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
-																":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
-		s = func.create_socket_client(hostN, nPort);
-		if s is None:
-			func.error("Errore nella scelta del primo peer vicino, scegline un altro.")
-			break
-		else:
-			s.sendall(pk)
-			s.close()
-			break
+	if len(listNeighbor) == 0: 		
+		while True:
+			print ("\n>>> SCELTA PEER VICINO")
+			nGroup = input("Numero del gruppo: ")
+			if nGroup is 0:
+				break
+			nElement = input("Numero dell'elemento del gruppo: ")
+			if nElement is 0:
+				break
+			nPort = input("Inserire la porta su cui il vicino è in ascolto: ")
+			if nPort is 0:
+				break
+			hostN = func.roll_the_dice("172.030." + func.format_string(nGroup, const.LENGTH_SECTION_IPV4, "0") + 
+																	"." + func.format_string(nElement, const.LENGTH_SECTION_IPV4, "0") + 
+																	"|fc00:0000:0000:0000:0000:0000:" + func.format_string(nGroup, const.LENGTH_SECTION_IPV6, "0") + 
+																	":" + func.format_string(nElement, const.LENGTH_SECTION_IPV6, "0"))
+			s = func.create_socket_client(hostN, nPort);
+			if s is None:
+				func.error("Errore nella scelta del primo peer vicino, scegline un altro.")
+				break
+			else:
+				s.sendall(pk)
+				s.close()
+				break
 
 def search(myHost, query, listNeighbor, listPkt):
 	pk = pack.query(myHost, query)
@@ -89,27 +82,24 @@ def search(myHost, query, listNeighbor, listPkt):
 					print("\n")
 					choose = int(input())
 					if choose != 0:
-						if choose <= i+1: # Al posto di questo i + 1 dovrebbe andare len(listResultQuery) + 1
+						if choose <= (len(listResultQuery) + 1):
 							func.remove_pktid(pk, listPkt)
 							download(listResultQuery[choose - 1])
 							del listResultQuery[:]
 						else: 
 							func.error("Spiacente, numero inserito non valido.")
-					# Per risolvere il problema di aggiornamento della listResultQuery
-					# tra una ricerca e l'altra dovrebbe bastare scrivere qui:
-					# else
-					#		func.remove_pktid(pk, listPkt)
-					#		del listResultQuery[:]
 					break
 				except ValueError:
 					func.error("Spiacente, inserisci un numero.")
+				finally:
+					func.remove_pktid(pk, listPkt)
+					del listResultQuery[:]
 
 	
 
 # Funzione di download
 def download(selectFile):	
 	print ("\n>>> DOWNLOAD")
-	#print ("Il file selezionato ha questi parametri: ", selectFile)
 
 	md5 = selectFile[1]
 	nomeFile = selectFile[2].decode("ascii").strip()
@@ -127,7 +117,6 @@ def download(selectFile):
 	    print ('Error: could not open socket in download')
 	else:
 		pk = pack.dl(md5)
-		#print("Send:", pk)
 		sP.sendall(pk)
 
 		nChunk = int(sP.recv(const.LENGTH_HEADER)[4:10])
@@ -138,19 +127,15 @@ def download(selectFile):
 		
 		while i != nChunk:
 			ricevutoLen = sP.recv(const.LENGTH_NCHUNK)
-			#print(ricevutoLen)
 			while (len(ricevutoLen) < const.LENGTH_NCHUNK):
 				ricevutoLen = ricevutoLen + sP.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
 			buff = sP.recv(int(ricevutoLen))
 			while(len(buff) < int(ricevutoLen)):
 				buff = buff + sP.recv(int(ricevutoLen) - len(buff))
 			ricevutoByte = ricevutoByte + buff
-			#print(len(buff), buff)
 			i = i + 1
 
 		sP.close()
-
-		#print ("Il numero di chunk è: ", nChunk)
 		
 		# Salvare il file data
 		open((const.FILE_COND + nomeFile),'wb').write(ricevutoByte)
@@ -211,10 +196,13 @@ daemonThreadv6.start()
 
 # Menù di interazione
 while True:
-	choice = input("\n\nScegli azione:\nupdate\t - Update Neighborhood\nview\t - View Neighborhood\nsearch\t - Search File\nquit\t - Quit\n\n")
+	choice = input("\n\nScegli azione:\nupdate\t - Update Neighborhood\ndelete\t - Delete Neighborhood\nview\t - View Neighborhood\nsearch\t - Search File\nquit\t - Quit\n\n")
 
 	if (choice == "update" or choice == "u"):
 		updateNeighbor(host, listNeighbor)
+
+	elif (choice == "delete" or choice == "d"):
+		del listNeighbor[:]
 
 	elif (choice == "view" or choice == "v"):
 		print ("\n>>> VIEW NEIGHBORHOOD")
