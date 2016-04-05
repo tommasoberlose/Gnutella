@@ -1,6 +1,7 @@
 from tkinter import *
 
 def create_window(title, msg):
+
 	# Prepara la finestra
 	cima = Tk()
 	F = Frame(cima)
@@ -9,13 +10,13 @@ def create_window(title, msg):
 	# Rinomina la finestra
 	F.master.title(title)
 
+	msg = StringVar()
+
 	lCiao = Label(F, text = msg)
 	lCiao.pack()
 
 	# Attiva il ciclo
 	cima.mainloop()
-
-	return lCiao
 
 def text(msg, F):
 	# Aggiungi i widget

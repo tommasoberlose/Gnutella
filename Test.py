@@ -22,5 +22,7 @@ print("PACK ANSWER QUERY:", pack.answer_query(bytes(func.random_pktid(const.LENG
 print("PACK DOWLOAD:", pack.dl(md5))
 print("PACK LOGOUT", pack.logout())"""
 
-lCiao = ui.create_window("Thread 1", "Stocazzo")
-lCiao.configure(text = "Dai pur")
+msg = None 
+ui.create_window("Thread 1", msg)
+msg.set("CiaoCiao")
+#lCiao.configure(text = "Dai pur")

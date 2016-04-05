@@ -1,5 +1,4 @@
 from threading import Thread
-import Interface as ui
 import time
 import sys
 import socket
