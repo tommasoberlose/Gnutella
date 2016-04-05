@@ -78,23 +78,24 @@ def search(myHost, query, listNeighbor, listPkt):
 		else:
 			print("\nScegli file da quelli disponibili (0 per uscire): \n")
 			print("ID\tFILE\t\tIP\n")
-			while True:
+			f = False
+			while not f:
 				try:
 					print("\n")
 					choose = int(input())
 					if choose != 0:
-						if choose <= (len(listResultQuery) + 1):
+						if choose <= len(listResultQuery):
+							f = True
 							func.remove_pktid(pk, listPkt)
 							download(listResultQuery[choose - 1])
 							del listResultQuery[:]
 						else: 
 							func.error("Spiacente, numero inserito non valido.")
-					break
 				except ValueError:
 					func.error("Spiacente, inserisci un numero.")
-				finally:
-					func.remove_pktid(pk, listPkt)
-					del listResultQuery[:]
+
+			func.remove_pktid(pk, listPkt)
+			del listResultQuery[:]
 
 	
 
