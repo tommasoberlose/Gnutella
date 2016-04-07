@@ -91,6 +91,8 @@ def search(myHost, query, listNeighbor, listPkt):
 							del listResultQuery[:]
 						else: 
 							func.error("Spiacente, numero inserito non valido.")
+					else:
+						break
 				except ValueError:
 					func.error("Spiacente, inserisci un numero.")
 
