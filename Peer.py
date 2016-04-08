@@ -132,7 +132,7 @@ def download(selectFile):
 		while i != nChunk:
 			ricevutoLen = sP.recv(const.LENGTH_NCHUNK)
 			while (len(ricevutoLen) < const.LENGTH_NCHUNK):
-				ricevutoLen = ricevutoLen + sP.recv(const.LENGTH_NCHUNK - int(ricevutoLen))
+				ricevutoLen = ricevutoLen + sP.recv(const.LENGTH_NCHUNK - len(ricevutoLen))
 			buff = sP.recv(int(ricevutoLen))
 			while(len(buff) < int(ricevutoLen)):
 				buff = buff + sP.recv(int(ricevutoLen) - len(buff))
